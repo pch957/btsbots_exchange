@@ -109,7 +109,7 @@ _refresh_order_book = function (text) {
         dataTR = tab_bid.insertRow();
         var price = order_bid_list[index][0]
         var volume = order_bid_list[index][1]
-        if(price >= excute_price && excute_price!= 0.0) {
+        if(price >= excute_price && excute_volume!= 0.0) {
           dataTR.insertCell(0).innerHTML = '<font color="#FF9933">'+price.toFixed(3)+'</font>';
           } else {
           dataTR.insertCell(0).innerHTML = price.toFixed(3);
@@ -120,7 +120,7 @@ _refresh_order_book = function (text) {
         dataTR = tab_ask.insertRow();
         var price = order_ask_list[index][0]
         var volume = order_ask_list[index][1]
-        if(price <= excute_price && excute_price!= 0.0) {
+        if(price <= excute_price && excute_volume!= 0.0) {
           dataTR.insertCell(0).innerHTML = '<font color="#FF9933">'+price.toFixed(3)+'</font>';
           } else {
           dataTR.insertCell(0).innerHTML = price.toFixed(3);
@@ -241,7 +241,7 @@ refresh_result = function (text) {
   if (!text) return;
   excute_price = text[0]
   pubnub.$('excute_price').innerHTML=text[0].toFixed(4);
-  excute_volue = text[1]
+  excute_volume = text[1]
   pubnub.$('excute_volume').innerHTML=text[1].toFixed(2);
 };
 
