@@ -1,0 +1,225 @@
+{{extend 'layout.html'}}
+
+<div align="left">
+<form id="fm" name="fm">
+<div> <b>Place Order</b> </div>
+<div>
+Deposit currency: 
+  <select id="deposit_currency" name="deposit_currency" onchange="javascript:calc_order()">
+    <option value="BTS">BTS</option>
+    <option value="CNY" selected="true">BitCNY</option>
+    <option value="USD">BitUSD</option>
+    <option value="BTC">BitBTC</option>
+    <option value="EUR">BitEUR</option>
+    <option value="GOLD">BitGOLD</option>
+    <option value="SILVER">BitSILVER</option>
+    <option value="BOTSCNY">BOTSCNY</option>
+  </select>
+</div>
+<div>
+Deposit amount:
+  <input id="deposit_amount" name="deposit_amount" type="text" value="1" size="10" onchange="javascript:calc_order();" onkeyup="javascript:calc_order();" /> Max: <font id="deposit_limit" color="#000000">0</font>
+</div>
+<div>
+Withdraw currency:
+  <select id="withdraw_currency" name="withdraw_currency" onchange="javascript:calc_order();">
+    <option value="BTS">BTS</option>
+    <option value="CNY">BitCNY</option>
+    <option value="USD" selected="true">BitUSD</option>
+    <option value="BTC">BitBTC</option>
+    <option value="EUR">BitEUR</option>
+    <option value="GOLD">BitGOLD</option>
+    <option value="SILVER">BitSILVER</option>
+    <option value="BOTSCNY">BOTSCNY</option>
+  </select>
+</div>
+<div>
+Withdraw amount:
+<font id="withdraw_amount">0</font>
+</div>
+<div>
+Price:
+<text id="exchange_price">0</text>
+</div>
+<div>
+  <input type="button" value="Place Order" onclick="javascript:generate_link()" />
+</div>
+<div>
+<td>
+  <div id="link_div" style="display:none">a</div>
+</td>
+</div>
+</form>
+</td>
+<td>
+<div id="price_div" style="display:none">
+<div>
+<td align="center"><b>Price List</b></td>
+</div>
+<div>
+<td height="10px"></td>
+</div>
+<div>
+<td>
+<table id="price_list_tab" cellspacing="1" width="100%">
+<td width="100px">Currency</td><td width="200px">Bid Price</td><td width="200px">Ask Price</td><td width="200px">Limit</td>
+</table>
+</td>
+</div>
+</table>
+</div>
+</td>
+</div>
+<tr>
+<td colspan=2>
+<table border=0 width="100%">
+<tr>
+<td align="center"><b>Order History</b></td>
+</tr>
+<tr><td align="center" height="10px"></td></tr>
+<tr><td>
+<table id="price_history_tab" cellspacing="1" width="100%">
+<td width="200px">Time</td>
+<td width="100px">Block#</td>
+<td width="100px">Trx ID</td>
+<td width="500px">Description</td>
+</table>
+</td></tr>
+</table>
+</td>
+</tr>
+</table>
+</div>
+
+<script src="http://cdn.pubnub.com/pubnub.min.js"></script>
+<script type="text/javascript">
+var bid_price = {};
+var ask_price = {};
+var amt_limit = {};
+function generate_link() {
+  //bts:to_id/transfer/amount/1.23/asset/USD/memo/xxx
+  var d_amt = document.fm.deposit_amount.value;
+  var d_cur = document.fm.deposit_currency.value;
+  var w_cur = document.fm.withdraw_currency.value;
+
+  try {
+    var w_amt = d_amt * bid_price[d_cur] / ask_price[w_cur];
+    if (w_amt > amt_limit[w_cur]) {
+      alert("No enough "+document.fm.withdraw_currency.options[document.fm.withdraw_currency.selectedIndex].value);
+      return false;
+    }
+    if (d_cur == w_cur) {
+      alert("Same currency is not supported!")
+      return false;
+    }
+    var pay_link = "bts:exchange.btsbots/transfer/amount/" + d_amt + "/asset/" + d_cur + "/memo/" + w_cur;
+    var link_id = 'pay_link' + new Date();
+    var link_div = document.getElementById("link_div");
+    link_div.innerHTML = "<a id='" + link_id + "' href='" + pay_link + "'>Click here to Pay</a>";
+    PUBNUB.$(link_id).click();
+  } catch (e) {
+  }
+}
+
+function calc_order() {
+  var d_amt = document.fm.deposit_amount.value;
+  var d_cur = document.fm.deposit_currency.value;
+  var w_cur = document.fm.withdraw_currency.value;
+  try {
+    var exchange_price = bid_price[d_cur] / ask_price[w_cur];
+    if (d_cur == w_cur) exchange_price = 1;
+    PUBNUB.$('exchange_price').innerHTML = exchange_price;
+    var deposit_limit = amt_limit[w_cur] / exchange_price;
+    PUBNUB.$('deposit_limit').innerHTML = deposit_limit;
+    var w_amt = d_amt * exchange_price;
+    PUBNUB.$('withdraw_amount').innerHTML = w_amt;
+    if (w_amt > amt_limit[w_cur]) {
+      PUBNUB.$('withdraw_amount').color = "#ff0000";
+    } else {
+      PUBNUB.$('withdraw_amount').color = "#000000";
+    }
+  } catch (e) {
+  }
+}
+
+init_price = function (text) {
+  refresh_price (text[0][0]);
+}
+
+refresh_price = function (text) { 
+      tab = PUBNUB.$('price_list_tab');
+      priceData = text;
+      for (cur in priceData) {
+        curData = priceData[cur];
+        bid_price[cur] = curData[0];
+        ask_price[cur] = curData[1];
+        amt_limit[cur] = curData[2];
+        if (PUBNUB.$('price_tr_'+cur)) {
+          PUBNUB.$('price_td1_'+cur).innerHTML=curData[0];
+          PUBNUB.$('price_td2_'+cur).innerHTML=curData[1];
+          PUBNUB.$('price_td3_'+cur).innerHTML=curData[2];
+        } else {
+          curTR = '<tr id="price_tr_' + cur + '"><td>'+cur+'</td>'
+                + '<td id="price_td1_'+cur+'">'+curData[0]+'</td>'
+                + '<td id="price_td2_'+cur+'">'+curData[1]+'</td>'
+                + '<td id="price_td3_'+cur+'">'+curData[2]+'</td></tr>';
+          tab.innerHTML += curTR;
+        }
+        
+      }
+      calc_order();
+};
+
+init_history = function (text) {
+  refresh_history(text[0]);
+};
+
+refresh_history = function (text) {
+      if (!text) return;
+      tab = PUBNUB.$('price_history_tab');
+      var hisData = text;
+      if (typeof hisData === 'string') {
+        hisData = [hisData];
+      }
+      for (index in hisData) {
+        data = hisData[index].split(" ");
+        time = data.shift();
+        blockid = data.shift();
+        trxid = data.shift();
+        desc = data.join(" ");
+        dataTR = tab.insertRow(1);
+        dataTR.id = "history_tr_"+time;
+        dataTR.insertCell(0).innerHTML = time;
+        dataTR.insertCell(1).innerHTML = blockid;
+        dataTR.insertCell(2).innerHTML = trxid;
+        dataTR.insertCell(3).innerHTML = desc;
+      } 
+};
+
+//(function(){
+//var box = PUBNUB.$('box'), input = PUBNUB.$('input'), channel = '';
+/*var pubnub = PUBNUB.init({
+  publish_key   : 'demo',
+  subscribe_key : 'demo'
+});
+*/
+PUBNUB.history({
+    channel : 'share_shift_asset',
+    count : 1,
+    callback : init_price
+});
+PUBNUB.history({
+    channel : 'share_shift_history',
+    count : 10,
+    callback : init_history
+});
+PUBNUB.subscribe({
+    channel : 'share_shift_asset',
+    callback : refresh_price
+});
+PUBNUB.subscribe({
+    channel : 'share_shift_history',
+    callback : refresh_history
+});
+//})();
+</script>

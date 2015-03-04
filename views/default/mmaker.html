@@ -1,0 +1,107 @@
+{{extend 'layout.html'}}
+
+<div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('trade history')}}</b></div>
+<div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div>
+<table id="trade_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
+	<tbody><tr>
+    <th>{{=T('Time')}}</th>
+    <th>{{=T('Type')}}</th>
+    <th>{{=T('volume')}}</th>
+    <th>{{=T('Asset')}}</th>
+    <th>{{=T('Cost')}}</th>
+    <th>{{=T('Asset')}}</th>
+    <th>{{=T('Price')}}</th>
+    <th>{{=T('Asset')}}</th>
+  </tr></tbody>
+</table>
+
+<script src="http://cdn.pubnub.com/pubnub.min.js"></script>
+<script type="text/javascript">
+var pubnub = PUBNUB.init({
+  publish_key   : '',
+  subscribe_key : 'sub-c-de8917b4-c156-11e4-b1db-0619f8945a4f'
+});
+init_history = function (text) {
+  refresh_history(text[0]);
+};
+
+refresh_history = function (text) {
+      if (!text) return;
+      tab = pubnub.$('trade_history');
+      var hisData = text;
+      if (typeof hisData[0] === 'string') {
+        hisData = [hisData];
+      }
+      hisData.sort();
+      var trxid_last = ""
+      for (index in hisData) {
+        data = hisData[index];
+        time = time_format(data.shift())
+        trxid = data.shift();
+        type = data.shift();
+        volume = data.shift();
+        asset1 = data.shift();
+        balance = data.shift();
+        asset2 = data.shift();
+        price = data.shift();
+        if(trxid == trxid_last) continue;
+        trxid_last = trxid;
+        desc = data.shift();
+        dataTR = tab.insertRow(1);
+        dataTR.id = "history_tr_"+time;
+        dataTR.insertCell(0).innerHTML = time;
+        dataTR.insertCell(1).innerHTML = type;
+        dataTR.insertCell(2).innerHTML = volume.toFixed(3);
+        dataTR.insertCell(3).innerHTML = asset1;
+        dataTR.insertCell(4).innerHTML = balance.toFixed(3);
+        dataTR.insertCell(5).innerHTML = asset2;
+        dataTR.insertCell(6).innerHTML = price.toFixed(5)
+        dataTR.insertCell(7).innerHTML = " "+asset2+"/"+asset1;
+      } 
+      try {
+        while (true) {
+          tab.deleteRow(102);
+        }
+      } catch (e) {
+      }
+};
+
+pubnub.history({
+    channel : 'mmaker_history',
+    count : 20,
+    callback : init_history
+});
+pubnub.subscribe({
+    channel : 'mmaker_history',
+    callback : refresh_history
+});
+
+Date.prototype.format = function(format) {
+   var date = {
+     "M+": this.getMonth() + 1,
+     "d+": this.getDate(),
+     "h+": this.getHours(),
+     "m+": this.getMinutes(),
+     "s+": this.getSeconds(),
+     "q+": Math.floor((this.getMonth() + 3) / 3),
+     "S+": this.getMilliseconds()
+   };
+   if (/(y+)/i.test(format)) {
+     format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+   }
+   for (var k in date) {
+     if (new RegExp("(" + k + ")").test(format)) {
+       format = format.replace(RegExp.$1, RegExp.$1.length == 1
+       ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+     }
+   }
+   return format;
+}
+
+time_format = function (text) {
+   time = new Date(text+"Z")
+   //time = new Date(time.getTime() - time.getTimezoneOffset()*60000)
+   time_str = time.format('MM-dd hh:mm:ss')
+   return time_str;
+}
+</script>

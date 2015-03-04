@@ -1,0 +1,187 @@
+{{extend 'layout.html'}}
+
+<div align="left">
+<div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('Place Order')}}</b></div>
+<div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div>
+{{=form}}
+<div id="price_div" style="display:none">
+<table id="price_list_tab" cellspacing="1" width="100%">
+<td width="100px">Currency</td><td width="200px">Bid Price</td><td width="200px">Ask Price</td><td width="200px">Limit</td>
+</table>
+</div>
+
+<div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('transaction history')}}</b></div>
+<div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div>
+<table id="transaction_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
+<tbody><tr>
+<th width="10%">{{=T('Time')}}</th>
+<th width="5%">{{=T('Block')}}</th>
+<th width="5%">{{=T('Trx ID')}}</th>
+<th width="50%">{{=T('Description')}}</th>
+</table>
+
+<script src="http://cdn.pubnub.com/pubnub.min.js"></script>
+<script type="text/javascript">
+var bid_price = {};
+var ask_price = {};
+var amt_limit = {};
+
+var pubnub = PUBNUB.init({
+  publish_key   : '',
+  subscribe_key : 'sub-c-de8917b4-c156-11e4-b1db-0619f8945a4f'
+});
+
+function generate_link() {
+  //bts:to_id/transfer/amount/1.23/asset/USD/memo/xxx
+  var d_amt = document.fm.deposit_amount.value;
+  var d_cur = document.fm.deposit_currency.value;
+  var w_cur = document.fm.withdraw_currency.value;
+
+  try {
+    var w_amt = d_amt * bid_price[d_cur] / ask_price[w_cur];
+    if (w_amt > amt_limit[w_cur]) {
+      alert("No enough "+document.fm.withdraw_currency.options[document.fm.withdraw_currency.selectedIndex].value);
+      return false;
+    }
+    if (d_cur == w_cur) {
+      alert("Same currency is not supported!")
+      return false;
+    }
+    var pay_link = "bts:exchange.btsbots/transfer/amount/" + d_amt + "/asset/" + d_cur + "/memo/" + w_cur;
+    var link_id = 'pay_link' + new Date();
+    var link_div = document.getElementById("link_div");
+    link_div.innerHTML = "<a id='" + link_id + "' href='" + pay_link + "'>Click here to Pay</a>";
+    pubnub.$(link_id).click();
+  } catch (e) {
+  }
+}
+
+function calc_order() {
+  var d_amt = document.fm.deposit_amount.value;
+  var d_cur = document.fm.deposit_currency.value;
+  var w_cur = document.fm.withdraw_currency.value;
+  try {
+    var exchange_price = bid_price[d_cur] / ask_price[w_cur];
+    if (d_cur == w_cur) exchange_price = 1;
+    pubnub.$('exchange_price').innerHTML = exchange_price.toFixed(5)+" "+w_cur+"/"+d_cur;
+    var deposit_limit = amt_limit[w_cur] / exchange_price;
+    pubnub.$('deposit_limit').innerHTML = deposit_limit.toFixed(4)+" "+d_cur;
+    var w_amt = d_amt * exchange_price;
+    pubnub.$('withdraw_amount').innerHTML = w_amt.toFixed(4)+ " "+w_cur;
+    if (w_amt > amt_limit[w_cur]) {
+      pubnub.$('withdraw_amount').color = "#ff0000";
+    } else {
+      pubnub.$('withdraw_amount').color = "#000000";
+    }
+    var comment= "to complete your order, send " + d_amt +" "+  d_cur + " to exchange.btsbots, with memo: " + w_cur;
+    if(navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage) == "zh-CN"){
+      comment= "为完成订单，请使用BTS钱包发送 " + d_amt +" "+  d_cur + " 到 exchange.btsbots, memo填写: " + w_cur;
+    }
+    pubnub.$('comment').innerHTML =comment 
+  } catch (e) {
+  }
+}
+
+init_price = function (text) {
+  refresh_price (text[0][0]);
+}
+
+refresh_price = function (text) { 
+      tab = pubnub.$('price_list_tab');
+      priceData = text;
+      for (cur in priceData) {
+        curData = priceData[cur];
+        bid_price[cur] = curData[0];
+        ask_price[cur] = curData[1];
+        amt_limit[cur] = curData[2];
+        if (pubnub.$('price_tr_'+cur)) {
+          pubnub.$('price_td1_'+cur).innerHTML=curData[0];
+          pubnub.$('price_td2_'+cur).innerHTML=curData[1];
+          pubnub.$('price_td3_'+cur).innerHTML=curData[2];
+        } else {
+          curTR = '<tr id="price_tr_' + cur + '"><td>'+cur+'</td>'
+                + '<td id="price_td1_'+cur+'">'+curData[0]+'</td>'
+                + '<td id="price_td2_'+cur+'">'+curData[1]+'</td>'
+                + '<td id="price_td3_'+cur+'">'+curData[2]+'</td></tr>';
+          tab.innerHTML += curTR;
+        }
+        
+      }
+      calc_order();
+};
+
+init_history = function (text) {
+  refresh_history(text[0]);
+};
+
+refresh_history = function (text) {
+      if (!text) return;
+      tab = pubnub.$('transaction_history');
+      var hisData = text;
+      if (typeof hisData === 'string') {
+        hisData = [hisData];
+      }
+      for (index in hisData) {
+        data = hisData[index].split(" ");
+        time = time_format(data.shift())
+        blockid = data.shift();
+        trxid = data.shift();
+        desc = data.join(" ");
+        dataTR = tab.insertRow(1);
+        dataTR.id = "history_tr_"+time;
+        dataTR.insertCell(0).innerHTML = time;
+        dataTR.insertCell(1).innerHTML = blockid;
+        dataTR.insertCell(2).innerHTML = trxid;
+        dataTR.insertCell(3).innerHTML = desc;
+      } 
+};
+
+pubnub.history({
+    channel : 'share_shift_asset',
+    count : 1,
+    callback : init_price
+});
+pubnub.history({
+    channel : 'share_shift_history',
+    count : 10,
+    callback : init_history
+});
+pubnub.subscribe({
+    channel : 'share_shift_asset',
+    callback : refresh_price
+});
+pubnub.subscribe({
+    channel : 'share_shift_history',
+    callback : refresh_history
+});
+//})();
+
+Date.prototype.format = function(format) {
+   var date = {
+     "M+": this.getMonth() + 1,
+     "d+": this.getDate(),
+     "h+": this.getHours(),
+     "m+": this.getMinutes(),
+     "s+": this.getSeconds(),
+     "q+": Math.floor((this.getMonth() + 3) / 3),
+     "S+": this.getMilliseconds()
+   };
+   if (/(y+)/i.test(format)) {
+     format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+   }
+   for (var k in date) {
+     if (new RegExp("(" + k + ")").test(format)) {
+       format = format.replace(RegExp.$1, RegExp.$1.length == 1
+       ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+     }
+   }
+   return format;
+}
+
+time_format = function (text) {
+   time = new Date(text+"Z")
+   //time = new Date(time.getTime() - time.getTimezoneOffset()*60000)
+   time_str = time.format('MM-dd hh:mm:ss')
+   return time_str;
+}
+</script>

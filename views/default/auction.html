@@ -1,0 +1,340 @@
+{{extend 'layout.html'}}
+
+<div style="margin: 5px 0;font-size:16px;"><table><tr><td width=23% align="left">{{=T('call auction will excute at block')}} <text style="color:#FF9933;" id=end_block></text> (<text id=end_time></text>)</td>
+<td width=30% align="right">{{=T('current match price')}}: <text id=excute_price style="color:#FF9933;"></text> CNY/BTS,{{=T('match volume')}}: <text style="color:#FF9933;"id=excute_volume></text> BTS</td></tr></table></div>
+
+{{=form}}
+
+			<div>
+				<div style="margin-right:25px;float:left;width:35%">
+					<div style="margin: 5px 0;">
+            <table height="25" width="428"><tbody><tr><td style="font-size:16px;color:#009900;border:0px;float:left;line-height:25px;text-align:left;" valign="middle" width="318"><b>{{=T('bid')}}</b></td><td style="border:0px;text-align:right" valign="middle" width="110" align="right"></td></tr></tbody></table>
+					</div>
+					<div style="clear:both;height:1px;background:#009900;width:100%;margin: 5px 0 0 0"></div>
+					<table id="order_book_bid" class="tableStyle1" width="428">
+						<tbody><tr>
+                <th width="120">{{=T('Price')}}(<span class="mkType">CNY</span>)</th>
+                <th width="120">{{=T('Volume')}}(<span class="coinName">BTS</span>)</th>
+						</tr>
+						
+        </tbody></table>
+				</div>
+				<div style="float:left;width:35%">
+					<div style="margin: 5px 0;">
+            <table height="25" width="428"><tbody><tr><td style="font-size:16px;color:#D01515;border:0px;float:left;line-height:25px;text-align:left;" valign="middle" width="318"><b>{{=T('ask')}}</b></td><td style="border:0px;text-align:right" valign="middle" width="110" align="right"></td></tr></tbody></table>
+					</div>
+					<div style="clear:both;height:1px;background:#D01515;width:100%;margin: 5px 0 0 0"></div>
+					<table id="order_book_ask" class="tableStyle1" width="428">
+            <th width="120">{{=T('Price')}}(<span class="mkType">CNY</span>)</th>
+            <th width="120">{{=T('Volume')}}(<span class="coinName">BTS</span>)</th>
+						</tr>
+						
+        </tbody></table>
+				</div>
+			</div>
+			</div>
+
+        <p></p>
+			<div>
+        <div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('transaction history')}}</b></div>
+				<div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div>
+				<table id="transaction_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
+					<tbody><tr>
+<th width="10%">{{=T('Time')}}</th>
+<th width="5%">{{=T('Block')}}</th>
+<th width="5%">{{=T('Trx ID')}}</th>
+<th width="50%">{{=T('Description')}}</th>
+					</tr>
+					
+          </tbody></table>
+			</div>
+
+        <p></p>
+			<div>
+				<div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div>
+        <div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('trade history')}}</b></div>
+				<table id="trade_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
+					<tbody><tr>
+<th width="20%">{{=T('Time')}}</th>
+<th width="10%">{{=T('Block')}}</th>
+<th width="20%">{{=T('Price')}}</th>
+<th width="50%">{{=T('volume')}}</th>
+					</tr>
+					
+          </tbody></table>
+			</div>
+		</div>
+	</div>
+
+<script src="http://cdn.pubnub.com/pubnub.min.js"></script>
+<script type="text/javascript">
+var pubnub = PUBNUB.init({
+  publish_key   : '',
+  subscribe_key : 'sub-c-de8917b4-c156-11e4-b1db-0619f8945a4f'
+});
+var bid_price = {};
+var ask_price = {};
+var amt_limit = {};
+var excute_price = 0.0
+var excute_volume = 0.0
+var order_book = {};
+var excute_time = 0;
+
+init_order_book = function (text) {
+  refresh_order_book(text[0][0]);
+  refresh_comment();
+};
+
+refresh_order_book = function (text) {
+      if (!text) return;
+      order_book = text
+      _refresh_order_book(order_book);
+      }
+
+_refresh_order_book = function (text) {
+      tab_bid = pubnub.$('order_book_bid');
+      tab_ask = pubnub.$('order_book_ask');
+      var order_bid_list = text["bid"];
+      var order_ask_list = text["ask"];
+      var rowCount = tab_bid.rows.length;
+      for (var index = rowCount -1; index>0; index--) {
+         tab_bid.deleteRow(index);
+         }
+      var rowCount = tab_ask.rows.length;
+      for (var index = rowCount -1; index>0; index--) {
+         tab_ask.deleteRow(index);
+         }
+
+      for (index in order_bid_list) {
+        dataTR = tab_bid.insertRow();
+        var price = order_bid_list[index][0]
+        var volume = order_bid_list[index][1]
+        if(price >= excute_price && excute_price!= 0.0) {
+          dataTR.insertCell(0).innerHTML = '<font color="#FF9933">'+price.toFixed(3)+'</font>';
+          } else {
+          dataTR.insertCell(0).innerHTML = price.toFixed(3);
+          }
+        dataTR.insertCell(1).innerHTML = volume.toFixed(2);
+      } 
+      for (index in order_ask_list) {
+        dataTR = tab_ask.insertRow();
+        var price = order_ask_list[index][0]
+        var volume = order_ask_list[index][1]
+        if(price <= excute_price && excute_price!= 0.0) {
+          dataTR.insertCell(0).innerHTML = '<font color="#FF9933">'+price.toFixed(3)+'</font>';
+          } else {
+          dataTR.insertCell(0).innerHTML = price.toFixed(3);
+          }
+        dataTR.insertCell(1).innerHTML = volume.toFixed(2);
+      } 
+};
+
+init_trade_history = function (text) {
+  refresh_trade_history(text[0]);
+};
+
+Date.prototype.format = function(format) {
+   var date = {
+     "M+": this.getMonth() + 1,
+     "d+": this.getDate(),
+     "h+": this.getHours(),
+     "m+": this.getMinutes(),
+     "s+": this.getSeconds(),
+     "q+": Math.floor((this.getMonth() + 3) / 3),
+     "S+": this.getMilliseconds()
+   };
+   if (/(y+)/i.test(format)) {
+     format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+   }
+   for (var k in date) {
+     if (new RegExp("(" + k + ")").test(format)) {
+       format = format.replace(RegExp.$1, RegExp.$1.length == 1
+       ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+     }
+   }
+   return format;
+}
+
+time_format = function (text) {
+   time = new Date(text+"Z")
+   //time = new Date(time.getTime() - time.getTimezoneOffset()*60000)
+   time_str = time.format('MM-dd hh:mm:ss')
+   return time_str;
+}
+
+refresh_trade_history = function (text) {
+      if (!text) return;
+      tab = pubnub.$('trade_history');
+      var hisData = text;
+      if (typeof hisData[0] === 'string') {
+        hisData = [hisData];
+      }
+      hisData.sort();
+      var trxid_last = ""
+      for (index in hisData) {
+        data = hisData[index];
+        //second = Date.parse(data.shift());
+        time = time_format(data.shift())
+        block_begin = data.shift();
+        block_end = data.shift();
+        price = data.shift();
+        volume = data.shift();
+        dataTR = tab.insertRow(1);
+        dataTR.id = "history_tr_"+time;
+        dataTR.insertCell(0).innerHTML = time_str;
+        dataTR.insertCell(1).innerHTML = block_end;
+        dataTR.insertCell(2).innerHTML = price.toFixed(5)+" CNY/BTS";
+        dataTR.insertCell(3).innerHTML = volume.toFixed(2)+" BTS";
+      } 
+      try {
+        while (true) {
+          tab.deleteRow(24);
+        }
+      } catch (e) {
+      }
+};
+
+init_trans_history = function (text) {
+  refresh_trans_history(text[0]);
+};
+
+refresh_trans_history = function (text) {
+      if (!text) return;
+      tab = pubnub.$('transaction_history');
+      var hisData = text;
+      if (typeof hisData[0] === 'string') {
+        hisData = [hisData];
+      }
+      hisData.sort();
+      var trxid_last = ""
+      for (index in hisData) {
+        data = hisData[index];
+        time = time_format(data.shift())
+        blockid = data.shift();
+        trxid = data.shift();
+        if(trxid == trxid_last) continue;
+        trxid_last = trxid;
+        desc = data.shift();
+        dataTR = tab.insertRow(1);
+        dataTR.id = "history_tr_"+time;
+        dataTR.insertCell(0).innerHTML = time;
+        dataTR.insertCell(1).innerHTML = blockid;
+        dataTR.insertCell(2).innerHTML = trxid;
+        dataTR.insertCell(3).innerHTML = desc;
+      } 
+      try {
+        while (true) {
+          tab.deleteRow(102);
+        }
+      } catch (e) {
+      }
+};
+
+init_result = function (text) {
+  refresh_result(text[0][0]);
+  _refresh_order_book(order_book)
+};
+
+refresh_result = function (text) {
+  if (!text) return;
+  excute_price = text[0]
+  pubnub.$('excute_price').innerHTML=text[0].toFixed(4);
+  excute_volue = text[1]
+  pubnub.$('excute_volume').innerHTML=text[1].toFixed(2);
+};
+
+init_excute_time = function (text) {
+  refresh_excute_time(text[0][0]);
+};
+
+refresh_excute_time = function (text) {
+  if (!text) return;
+  pubnub.$('end_block').innerHTML=text[1];
+  time = new Date(text[2]+"Z")
+  excute_time = time.getTime();
+};
+
+pubnub.history({
+    channel : 'auction_trade_history',
+    count : 10,
+    callback : init_trade_history
+});
+pubnub.subscribe({
+    channel : 'auction_trade_history',
+    callback : refresh_trade_history
+});
+pubnub.history({
+    channel : 'auction_transaction_history',
+    count : 10,
+    callback : init_trans_history
+});
+pubnub.subscribe({
+    channel : 'auction_transaction_history',
+    callback : refresh_trans_history
+});
+pubnub.history({
+    channel : 'auction_order_book',
+    count : 1,
+    callback : init_order_book
+});
+pubnub.subscribe({
+    channel : 'auction_order_book',
+    callback : refresh_order_book
+});
+pubnub.history({
+    channel : 'auction_match_result',
+    count : 1,
+    callback : init_result
+});
+pubnub.subscribe({
+    channel : 'auction_match_result',
+    callback : refresh_result
+});
+pubnub.history({
+    channel : 'auction_excute_time',
+    count : 1,
+    callback : init_excute_time
+});
+pubnub.subscribe({
+    channel : 'auction_excute_time',
+    callback : refresh_excute_time
+});
+function generate_link() {
+  //bts:to_id/transfer/amount/1.23/asset/USD/memo/xxx
+  var d_amt = document.fm.deposit_amount.value;
+  var d_cur = document.fm.deposit_currency.value;
+  var w_price = document.fm.price_limit.value;
+
+  try {
+    var pay_link = "bts:auction.btsbots/transfer/amount/" + d_amt + "/asset/" + d_cur + "/memo/" + w_price;
+    var link_id = 'pay_link' + new Date();
+    var link_div = document.getElementById("link_div");
+    link_div.innerHTML = "<a id='" + link_id + "' href='" + pay_link + "'>Click here to Pay</a>";
+    pubnub.$(link_id).click();
+  } catch (e) {
+  }
+}
+
+function refresh_comment() {
+  var d_amt = document.fm.deposit_amount.value;
+  var d_cur = document.fm.deposit_currency.value;
+  var d_price = document.fm.price_limit.value;
+  try {
+    var comment= " to complete your order, send " + d_amt +" "+  d_cur + " to auction.btsbots, with memo: " + d_price;
+    if(navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage) == "zh-CN"){
+      comment= "为完成订单，请使用BTS钱包发送 " + d_amt +" "+  d_cur + " 到 auction.btsbots, memo填写: " + d_price;
+      }
+    pubnub.$('comment').innerHTML =comment 
+  } catch (e) {
+  }
+
+function ShowCountDown() {
+  now = new Date()
+  var countdown = ((excute_time -now.getTime())/1000+12).toFixed(0);
+  if (countdown <= 0) countdown = 0;
+  pubnub.$('end_time').innerHTML=countdown;
+}
+
+window.setInterval(function(){ShowCountDown();}, 1000); 
+}
+</script>
