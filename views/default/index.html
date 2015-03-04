@@ -69,9 +69,9 @@ function calc_order() {
     var w_amt = d_amt * exchange_price;
     pubnub.$('withdraw_amount').innerHTML = w_amt.toFixed(4)+ " "+w_cur;
     if (w_amt > amt_limit[w_cur]) {
-      pubnub.$('withdraw_amount').color = "#ff0000";
+      pubnub.$('withdraw_amount').style= "color:#ff0000;";
     } else {
-      pubnub.$('withdraw_amount').color = "#000000";
+      pubnub.$('withdraw_amount').style= "color:#000000;";
     }
     var comment= "to complete your order, send " + d_amt +" "+  d_cur + " to exchange.btsbots, with memo: " + w_cur;
     if(navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage) == "zh-CN"){

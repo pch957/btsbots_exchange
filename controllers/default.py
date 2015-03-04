@@ -21,16 +21,19 @@ def index():
 def auction():
     form = FORM(
       (T('Deposit')),
-      (INPUT(_id="deposit_amount",_name="deposit_amount",_onchange="javascript:refresh_comment();",value=1)),
+      (INPUT(_id="deposit_amount",_name="deposit_amount",_onkeyup="javascript:refresh_comment();",_onchange="javascript:refresh_comment();",value=1)),
       (SELECT('BTS','BOTSCNY','CNY','USD','EUR','GOLD','SILVER', _name="deposit_currency",_id="deposit_currency",_onchange="javascript:refresh_comment();")),
       (T('with price limit')),
-      (INPUT(_id="price_limit",_name="price_limit",_onchange="javascript:refresh_comment();",value=500)),
+      (INPUT(_id="price_limit",_name="price_limit",_onkeyup="javascript:refresh_comment();",_onchange="javascript:refresh_comment();")),
       ('CNY/BTS'),
       (INPUT(_type='button', _value=T("Place Order"),  _onclick="javascript:generate_link()")),
       DIV(_id="link_div",_style="display:none"),
       P(),
-      TR(T('Comment')+':', EM(_id="comment")),
+      T('Comment')+':', EM(_id="comment"),
+      P(),
+      EM(T('transfer BTS if you want to sell, others for buy.')),
       _id="fm", _name="fm")
+    #response.flash = T('transfer BTS if you want to sell, others for buy.')
     return dict(form=form)
 
 def mmaker():

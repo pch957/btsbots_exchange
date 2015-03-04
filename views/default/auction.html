@@ -1,5 +1,6 @@
 {{extend 'layout.html'}}
 
+
 <div style="margin: 5px 0;font-size:16px;"><table><tr><td width=23% align="left">{{=T('call auction will excute at block')}} <text style="color:#FF9933;" id=end_block></text> (<text id=end_time></text>)</td>
 <td width=30% align="right">{{=T('current match price')}}: <text id=excute_price style="color:#FF9933;"></text> CNY/BTS,{{=T('match volume')}}: <text style="color:#FF9933;"id=excute_volume></text> BTS</td></tr></table></div>
 
@@ -82,7 +83,6 @@ var excute_time = 0;
 
 init_order_book = function (text) {
   refresh_order_book(text[0][0]);
-  refresh_comment();
 };
 
 refresh_order_book = function (text) {
@@ -233,6 +233,8 @@ refresh_trans_history = function (text) {
 init_result = function (text) {
   refresh_result(text[0][0]);
   _refresh_order_book(order_book)
+  pubnub.$('price_limit').value= excute_price
+  refresh_comment();
 };
 
 refresh_result = function (text) {
@@ -325,6 +327,11 @@ function refresh_comment() {
       comment= "为完成订单，请使用BTS钱包发送 " + d_amt +" "+  d_cur + " 到 auction.btsbots, memo填写: " + d_price;
       }
     pubnub.$('comment').innerHTML =comment 
+    if(d_price / excute_price < 0.8 || d_price / excute_price  > 1.2){
+      pubnub.$('price_limit').style= "color:#ff0000;";
+      }else{
+     pubnub.$('price_limit').style= "color:#000000;";
+     }
   } catch (e) {
   }
 

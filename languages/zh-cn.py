@@ -54,8 +54,8 @@
 'Clear RAM': 'Clear RAM',
 'Client IP': '客户端网址(IP)',
 'Command': 'Command',
-'comment': 'comment',
 'Comment': '注释',
+'comment': 'comment',
 'Community': 'Community',
 'Components and Plugins': 'Components and Plugins',
 'Controller': '控件',
@@ -249,6 +249,7 @@
 'trade history': '成交记录',
 'TradeType': 'TradeType',
 'transaction history': '交易记录',
+'transfer BTS if you want to sell, others for buy. the trade fee is 0.1% , and the transfer fee is 0.1 BTS': 'transfer BTS if you want to sell, others for buy. the trade fee is 0.1% , and the transfer fee is 0.1 BTS',
 'Trx ID': '交易号',
 'Twitter': 'Twitter',
 'Type': '类型',
@@ -281,4 +282,5 @@
 'You are successfully running web2py': '您已成功运行 web2py',
 'You can modify this application and adapt it to your needs': '请根据您的需要修改本程序',
 'You visited the url %s': 'You visited the url %s',
+'transfer BTS if you want to sell, others for buy.': '发送BTS会下卖单，其它任何资产均为买单。'
 }
