@@ -233,7 +233,7 @@ refresh_trans_history = function (text) {
 init_result = function (text) {
   refresh_result(text[0][0]);
   _refresh_order_book(order_book)
-  pubnub.$('price_limit').value= excute_price
+  pubnub.$('price_limit').value= excute_price.toFixed(3);
   refresh_comment();
 };
 
