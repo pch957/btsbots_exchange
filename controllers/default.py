@@ -42,6 +42,9 @@ def mmaker():
 def faq():
     return dict()
 
+def join():
+    return dict()
+
 def error():
     return dict()
 

@@ -7,5 +7,6 @@ response.menu = [
 (T('Exchange'),URL('default','index')==URL(),URL('default','index'),[]),
 (T('Auction'),URL('default','auction')==URL(),URL('default','auction'),[]),
 (T('MMBots'),URL('default','mmaker')==URL(),URL('default','mmaker'),[]),
+(T('Join Us'),URL('default','join')==URL(),URL('default','join'),[]),
 (T('FAQ'),URL('default','faq')==URL(),URL('default','faq'),[]),
 ]

@@ -137,6 +137,7 @@
 'Invalid Query': '无效的查询请求',
 'invalid request': '网络要求无效',
 'Is Active': 'Is Active',
+'Join Us': 'Join Us',
 'Key': 'Key',
 'Language files (static strings) updated': '语言文件已更新',
 'Languages': '各国语言',
@@ -249,6 +250,7 @@
 'trade history': '成交记录',
 'TradeType': 'TradeType',
 'transaction history': '交易记录',
+'transfer BTS if you want to sell, others for buy.': '发送BTS会下卖单，其它任何资产均为买单。',
 'transfer BTS if you want to sell, others for buy. the trade fee is 0.1% , and the transfer fee is 0.1 BTS': 'transfer BTS if you want to sell, others for buy. the trade fee is 0.1% , and the transfer fee is 0.1 BTS',
 'Trx ID': '交易号',
 'Twitter': 'Twitter',
@@ -282,5 +284,5 @@
 'You are successfully running web2py': '您已成功运行 web2py',
 'You can modify this application and adapt it to your needs': '请根据您的需要修改本程序',
 'You visited the url %s': 'You visited the url %s',
-'transfer BTS if you want to sell, others for buy.': '发送BTS会下卖单，其它任何资产均为买单。'
+'Join Us': '加入我们',
 }
