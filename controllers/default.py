@@ -12,7 +12,7 @@ def index():
       TR(T('Withdraw amount')+':', B(_id="withdraw_amount")),
       TR(T('Price')+':', B(_id="exchange_price"))),
       INPUT(_type='button', _value=T("Place Order"),  _onclick="javascript:generate_link()"),
-      T('Comment')+':', EM(_id="comment"),
+      T('Comment')+':', TT(_id="comment"),
       DIV(_id="link_div",_style="display:none"),
       _id="fm", _name="fm")
 
@@ -29,9 +29,9 @@ def auction():
       (INPUT(_type='button', _value=T("Place Order"),  _onclick="javascript:generate_link()")),
       DIV(_id="link_div",_style="display:none"),
       P(),
-      T('Comment')+':', EM(_id="comment"),
+      T('Comment')+':', TT(_id="comment"),
       P(),
-      EM(T('transfer BTS if you want to sell, others for buy.')),
+      T('transfer BTS if you want to sell, others for buy.'),
       _id="fm", _name="fm")
     #response.flash = T('transfer BTS if you want to sell, others for buy.')
     return dict(form=form)
