@@ -332,9 +332,15 @@ function refresh_comment() {
   var account = "{{=account}}";
 
   try {
-    var comment= " to complete your order, send " + d_amt +" "+  d_cur + " to " + account + ", with memo: " + d_price;
+    var comment1_en = ""
+    var comment1_cn = ""
+    if (market == "BTC") {
+      comment1_en = "you can get TRADE.BTC from <A href=http://blocktrades.us> blocktrades.us</A>, "
+      comment1_cn = "你可以从<A href=http://blocktrades.us> blocktrades.us</A> 充提 TRADE.BTC, "
+      }
+    var comment= comment1_en + "to complete your order, send " + d_amt +" "+  d_cur + " to " + account + ", with memo: " + d_price;
     if(navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage) == "zh-CN"){
-      comment= "为完成订单，请使用bts钱包发送 " + d_amt +" "+  d_cur + " 到 " + account + ", memo填写: " + d_price;
+      comment= comment1_cn + "为完成订单，请使用bts钱包发送 " + d_amt +" "+  d_cur + " 到 " + account + ", memo填写: " + d_price;
       }
     pubnub.$('comment').innerHTML =comment 
     if(d_price / excute_price < 0.8 || d_price / excute_price  > 1.2){

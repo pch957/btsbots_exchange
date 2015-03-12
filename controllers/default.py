@@ -40,7 +40,7 @@ def auction():
       P(),
       T('Comment')+':', TT(_id="comment"),
       P(),
-      T('transfer BTS if you want to sell, others for buy.').replace("BTS",asset),
+      T('transfer ASSET if you want to sell MARKET, others for buy MARKET.').replace("ASSET",asset).replace("MARKET",market),
       _id="fm", _name="fm")
     #response.flash = T('transfer BTS if you want to sell, others for buy.')
     return dict(form=form, market=market, account=account, chanel_prefix=chanel_prefix)
