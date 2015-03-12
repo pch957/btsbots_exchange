@@ -2,7 +2,7 @@
 
 
 <div style="margin: 5px 0;font-size:16px;"><table><tr><td width=23% align="left">{{=T('call auction will excute at block')}} <text style="color:#FF9933;" id=end_block></text> (<text id=end_time></text>)</td>
-<td width=30% align="right">{{=T('current match price')}}: <text id=excute_price style="color:#FF9933;"></text> CNY/BTS,{{=T('match volume')}}: <text style="color:#FF9933;"id=excute_volume></text> BTS</td></tr></table></div>
+<td width=30% align="right">{{=T('current match price')}}: <text id=excute_price style="color:#FF9933;"></text> CNY/{{=market}},{{=T('match volume')}}: <text style="color:#FF9933;"id=excute_volume></text> {{=market}}</td></tr></table></div>
 
 {{=form}}
 
@@ -15,7 +15,7 @@
 					<table id="order_book_bid" class="tableStyle1" width="428">
 						<tbody><tr>
                 <th width="120">{{=T('Price')}}(<span class="mkType">CNY</span>)</th>
-                <th width="120">{{=T('Volume')}}(<span class="coinName">BTS</span>)</th>
+                <th width="120">{{=T('Volume')}}(<span class="coinName">{{=market}}</span>)</th>
 						</tr>
 						
         </tbody></table>
@@ -27,7 +27,7 @@
 					<div style="clear:both;height:1px;background:#D01515;width:100%;margin: 5px 0 0 0"></div>
 					<table id="order_book_ask" class="tableStyle1" width="428">
             <th width="120">{{=T('Price')}}(<span class="mkType">CNY</span>)</th>
-            <th width="120">{{=T('Volume')}}(<span class="coinName">BTS</span>)</th>
+            <th width="120">{{=T('Volume')}}(<span class="coinName">{{=market}}</span>)</th>
 						</tr>
 						
         </tbody></table>
@@ -80,6 +80,13 @@ var excute_price = 0.0
 var excute_volume = 0.0
 var order_book = {};
 var excute_time = 0;
+var precision_price = 4
+var precision_volume = 2
+var market = "{{=market}}"
+if (market == "BTC") {
+  precision_price = 0;
+  precision_volume = 4;
+  }
 
 init_order_book = function (text) {
   refresh_order_book(text[0][0]);
@@ -110,22 +117,22 @@ _refresh_order_book = function (text) {
         var price = order_bid_list[index][0]
         var volume = order_bid_list[index][1]
         if(price >= excute_price && excute_volume!= 0.0) {
-          dataTR.insertCell(0).innerHTML = '<font color="#FF9933">'+price.toFixed(3)+'</font>';
+          dataTR.insertCell(0).innerHTML = '<font color="#FF9933">'+price.toFixed(precision_price)+'</font>';
           } else {
-          dataTR.insertCell(0).innerHTML = price.toFixed(3);
+          dataTR.insertCell(0).innerHTML = price.toFixed(precision_price);
           }
-        dataTR.insertCell(1).innerHTML = volume.toFixed(2);
+        dataTR.insertCell(1).innerHTML = volume.toFixed(precision_volume);
       } 
       for (index in order_ask_list) {
         dataTR = tab_ask.insertRow();
         var price = order_ask_list[index][0]
         var volume = order_ask_list[index][1]
         if(price <= excute_price && excute_volume!= 0.0) {
-          dataTR.insertCell(0).innerHTML = '<font color="#FF9933">'+price.toFixed(3)+'</font>';
+          dataTR.insertCell(0).innerHTML = '<font color="#FF9933">'+price.toFixed(precision_price)+'</font>';
           } else {
-          dataTR.insertCell(0).innerHTML = price.toFixed(3);
+          dataTR.insertCell(0).innerHTML = price.toFixed(precision_price);
           }
-        dataTR.insertCell(1).innerHTML = volume.toFixed(2);
+        dataTR.insertCell(1).innerHTML = volume.toFixed(precision_volume);
       } 
 };
 
@@ -183,8 +190,8 @@ refresh_trade_history = function (text) {
         dataTR.id = "history_tr_"+time;
         dataTR.insertCell(0).innerHTML = time_str;
         dataTR.insertCell(1).innerHTML = block_end;
-        dataTR.insertCell(2).innerHTML = price.toFixed(5)+" CNY/BTS";
-        dataTR.insertCell(3).innerHTML = volume.toFixed(2)+" BTS";
+        dataTR.insertCell(2).innerHTML = price.toFixed(precision_price)+" CNY/{{=market}}";
+        dataTR.insertCell(3).innerHTML = volume.toFixed(precision_volume)+" {{=market}}";
       } 
       try {
         while (true) {
@@ -233,16 +240,16 @@ refresh_trans_history = function (text) {
 init_result = function (text) {
   refresh_result(text[0][0]);
   _refresh_order_book(order_book)
-  pubnub.$('price_limit').value= excute_price.toFixed(3);
+  pubnub.$('price_limit').value= excute_price.toFixed(precision_price);
   refresh_comment();
 };
 
 refresh_result = function (text) {
   if (!text) return;
   excute_price = text[0]
-  pubnub.$('excute_price').innerHTML=text[0].toFixed(4);
+  pubnub.$('excute_price').innerHTML=text[0].toFixed(precision_price);
   excute_volume = text[1]
-  pubnub.$('excute_volume').innerHTML=text[1].toFixed(2);
+  pubnub.$('excute_volume').innerHTML=text[1].toFixed(precision_volume);
 };
 
 init_excute_time = function (text) {
@@ -257,48 +264,48 @@ refresh_excute_time = function (text) {
 };
 
 pubnub.history({
-    channel : 'auction_trade_history',
+    channel : '{{=chanel_prefix}}_trade_history',
     count : 10,
     callback : init_trade_history
 });
 pubnub.subscribe({
-    channel : 'auction_trade_history',
+    channel : '{{=chanel_prefix}}_trade_history',
     callback : refresh_trade_history
 });
 pubnub.history({
-    channel : 'auction_transaction_history',
+    channel : '{{=chanel_prefix}}_transaction_history',
     count : 10,
     callback : init_trans_history
 });
 pubnub.subscribe({
-    channel : 'auction_transaction_history',
+    channel : '{{=chanel_prefix}}_transaction_history',
     callback : refresh_trans_history
 });
 pubnub.history({
-    channel : 'auction_order_book',
+    channel : '{{=chanel_prefix}}_order_book',
     count : 1,
     callback : init_order_book
 });
 pubnub.subscribe({
-    channel : 'auction_order_book',
+    channel : '{{=chanel_prefix}}_order_book',
     callback : refresh_order_book
 });
 pubnub.history({
-    channel : 'auction_match_result',
+    channel : '{{=chanel_prefix}}_match_result',
     count : 1,
     callback : init_result
 });
 pubnub.subscribe({
-    channel : 'auction_match_result',
+    channel : '{{=chanel_prefix}}_match_result',
     callback : refresh_result
 });
 pubnub.history({
-    channel : 'auction_excute_time',
+    channel : '{{=chanel_prefix}}_excute_time',
     count : 1,
     callback : init_excute_time
 });
 pubnub.subscribe({
-    channel : 'auction_excute_time',
+    channel : '{{=chanel_prefix}}_excute_time',
     callback : refresh_excute_time
 });
 function generate_link() {
@@ -306,9 +313,10 @@ function generate_link() {
   var d_amt = document.fm.deposit_amount.value;
   var d_cur = document.fm.deposit_currency.value;
   var w_price = document.fm.price_limit.value;
+  var account = "{{=account}}";
 
   try {
-    var pay_link = "bts:auction.btsbots/transfer/amount/" + d_amt + "/asset/" + d_cur + "/memo/" + w_price;
+    var pay_link = "bts:"+account+"/transfer/amount/" + d_amt + "/asset/" + d_cur + "/memo/" + w_price;
     var link_id = 'pay_link' + new Date();
     var link_div = document.getElementById("link_div");
     link_div.innerHTML = "<a id='" + link_id + "' href='" + pay_link + "'>Click here to Pay</a>";
@@ -321,10 +329,12 @@ function refresh_comment() {
   var d_amt = document.fm.deposit_amount.value;
   var d_cur = document.fm.deposit_currency.value;
   var d_price = document.fm.price_limit.value;
+  var account = "{{=account}}";
+
   try {
-    var comment= " to complete your order, send " + d_amt +" "+  d_cur + " to auction.btsbots, with memo: " + d_price;
+    var comment= " to complete your order, send " + d_amt +" "+  d_cur + " to " + account + ", with memo: " + d_price;
     if(navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage) == "zh-CN"){
-      comment= "为完成订单，请使用BTS钱包发送 " + d_amt +" "+  d_cur + " 到 auction.btsbots, memo填写: " + d_price;
+      comment= "为完成订单，请使用bts钱包发送 " + d_amt +" "+  d_cur + " 到 " + account + ", memo填写: " + d_price;
       }
     pubnub.$('comment').innerHTML =comment 
     if(d_price / excute_price < 0.8 || d_price / excute_price  > 1.2){

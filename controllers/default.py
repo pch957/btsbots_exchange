@@ -19,22 +19,31 @@ def index():
     return dict(form=form)
 
 def auction():
+    market = request.vars['market'].upper()
+    if market == "BTC":
+      asset = "TRADE.BTC"
+      account = "btc.auction.btsbots"
+      chanel_prefix = "auction_btc"
+    else:
+      asset = "BTS"
+      account = "auction.btsbots"
+      chanel_prefix = "auction"
     form = FORM(
       (T('Deposit')),
       (INPUT(_id="deposit_amount",_name="deposit_amount",_onkeyup="javascript:refresh_comment();",_onchange="javascript:refresh_comment();",value=1)),
-      (SELECT('BTS','BOTSCNY','CNY','USD','EUR','GOLD','SILVER', _name="deposit_currency",_id="deposit_currency",_onchange="javascript:refresh_comment();")),
+      (SELECT(asset,'BOTSCNY','CNY','USD','EUR','GOLD','SILVER', _name="deposit_currency",_id="deposit_currency",_onchange="javascript:refresh_comment();")),
       (T('with price limit')),
       (INPUT(_id="price_limit",_name="price_limit",_onkeyup="javascript:refresh_comment();",_onchange="javascript:refresh_comment();")),
-      ('CNY/BTS'),
+      ('CNY/'+market),
       (INPUT(_type='button', _value=T("Place Order"),  _onclick="javascript:generate_link()")),
       DIV(_id="link_div",_style="display:none"),
       P(),
       T('Comment')+':', TT(_id="comment"),
       P(),
-      T('transfer BTS if you want to sell, others for buy.'),
+      T('transfer BTS if you want to sell, others for buy.').replace("BTS",asset),
       _id="fm", _name="fm")
     #response.flash = T('transfer BTS if you want to sell, others for buy.')
-    return dict(form=form)
+    return dict(form=form, market=market, account=account, chanel_prefix=chanel_prefix)
 
 def mmaker():
     return dict()
