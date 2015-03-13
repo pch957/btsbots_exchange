@@ -19,7 +19,10 @@ def index():
     return dict(form=form)
 
 def auction():
-    market = request.vars['market'].upper()
+    if "market" in request.vars:
+      market = request.vars['market'].upper()
+    else:
+      market = "BTS"
     if market == "BTC":
       asset = "TRADE.BTC"
       account = "btc.auction.btsbots"
