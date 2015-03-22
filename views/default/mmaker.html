@@ -55,7 +55,7 @@ refresh_history = function (text) {
         dataTR.insertCell(3).innerHTML = asset1;
         dataTR.insertCell(4).innerHTML = balance.toFixed(3);
         dataTR.insertCell(5).innerHTML = asset2;
-        dataTR.insertCell(6).innerHTML = price.toFixed(5)
+        dataTR.insertCell(6).innerHTML = price.toPrecision(4)
         dataTR.insertCell(7).innerHTML = " "+asset2+"/"+asset1;
       } 
       try {
