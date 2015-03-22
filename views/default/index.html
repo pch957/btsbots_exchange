@@ -63,11 +63,19 @@ function calc_order() {
   try {
     var exchange_price = bid_price[d_cur] / ask_price[w_cur];
     if (d_cur == w_cur) exchange_price = 1;
-    pubnub.$('exchange_price').innerHTML = exchange_price.toPrecision(4)+" "+w_cur+"/"+d_cur;
+    if(exchange_price > 1){
+      pubnub.$('exchange_price').innerHTML = exchange_price.toFixed(3)+" "+w_cur+"/"+d_cur;
+      }else{
+      pubnub.$('exchange_price').innerHTML = exchange_price.toPrecision(4)+" "+w_cur+"/"+d_cur;
+      }
     var deposit_limit = amt_limit[w_cur] / exchange_price;
     pubnub.$('deposit_limit').innerHTML = deposit_limit.toFixed(4)+" "+d_cur;
     var w_amt = d_amt * exchange_price;
-    pubnub.$('withdraw_amount').innerHTML = w_amt.toFixed(4)+ " "+w_cur;
+    if (w_amt>1) {
+      pubnub.$('withdraw_amount').innerHTML = w_amt.toFixed(2)+ " "+w_cur;
+    } else {
+      pubnub.$('withdraw_amount').innerHTML = w_amt.toPrecision(3)+ " "+w_cur;
+    }
     if (w_amt > amt_limit[w_cur]) {
       pubnub.$('withdraw_amount').style= "color:#ff0000;";
     } else {
