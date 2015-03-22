@@ -68,7 +68,7 @@ refresh_history = function (text) {
 
 pubnub.history({
     channel : 'mmaker_history',
-    count : 20,
+    count : 100,
     callback : init_history
 });
 pubnub.subscribe({
