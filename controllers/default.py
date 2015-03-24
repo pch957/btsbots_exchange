@@ -6,9 +6,9 @@ def call(): return service()
 ### end requires
 def index():
     form = FORM(TABLE(
-      TR(T('Deposit currency')+':', SELECT('BDR.AAPL','BTS','BOTSCNY','CNY','USD','EUR','GOLD','SILVER','BTC', _name="deposit_currency",_id="deposit_currency",_onchange="javascript:calc_order()")),
+      TR(T('Deposit currency')+':', SELECT('BOTSCNY','BDR.AAPL','BTS','CNY','USD','EUR','GOLD','SILVER','BTC', _name="deposit_currency",_id="deposit_currency",_onchange="javascript:calc_order()")),
       TR(T('Deposit amount')+':', INPUT(_id="deposit_amount",_name="deposit_amount",_onchange="javascript:calc_order();",_onkeyup="javascript:calc_order();",value=1),T('Max')+':',B(_id="deposit_limit")),
-      TR(T('Withdraw currency')+':', SELECT('BOTSCNY','BTS','CNY','USD','EUR','GOLD','SILVER','BTC','BDR.AAPL', _name="withdraw_currency",_id="withdraw_currency",_onchange="javascript:calc_order()")),
+      TR(T('Withdraw currency')+':', SELECT('BDR.AAPL','BOTSCNY','BTS','CNY','USD','EUR','GOLD','SILVER','BTC', _name="withdraw_currency",_id="withdraw_currency",_onchange="javascript:calc_order()")),
       TR(T('Withdraw amount')+':', B(_id="withdraw_amount")),
       TR(T('Price')+':', B(_id="exchange_price"))),
       INPUT(_type='button', _value=T("Place Order"),  _onclick="javascript:generate_link()"),
