@@ -24,7 +24,8 @@
 <script type="text/javascript">
 var bid_price = {};
 var ask_price = {};
-var amt_limit = {};
+var amt_limit_out = {};
+var amt_limit_in = {};
 
 var pubnub = PUBNUB.init({
   publish_key   : '',
@@ -39,7 +40,7 @@ function generate_link() {
 
   try {
     var w_amt = d_amt * bid_price[d_cur] / ask_price[w_cur];
-    if (w_amt > amt_limit[w_cur]) {
+    if (w_amt > amt_limit_out[w_cur] || d_amt > amt_limit_in[d_cur]) {
       alert("No enough "+document.fm.withdraw_currency.options[document.fm.withdraw_currency.selectedIndex].value);
       return false;
     }
@@ -68,7 +69,7 @@ function calc_order() {
       }else{
       pubnub.$('exchange_price').innerHTML = exchange_price.toPrecision(4)+" "+w_cur+"/"+d_cur;
       }
-    var deposit_limit = amt_limit[w_cur] / exchange_price;
+    var deposit_limit = Math.min(amt_limit_out[w_cur] / exchange_price, amt_limit_in[d_cur]);
     pubnub.$('deposit_limit').innerHTML = deposit_limit.toFixed(4)+" "+d_cur;
     var w_amt = d_amt * exchange_price;
     if (w_amt>1) {
@@ -76,7 +77,7 @@ function calc_order() {
     } else {
       pubnub.$('withdraw_amount').innerHTML = w_amt.toPrecision(3)+ " "+w_cur;
     }
-    if (w_amt > amt_limit[w_cur]) {
+    if (w_amt > amt_limit_out[w_cur] || d_amt > amt_limit_in[d_cur]) {
       pubnub.$('withdraw_amount').style= "color:#ff0000;";
     } else {
       pubnub.$('withdraw_amount').style= "color:#000000;";
@@ -101,16 +102,19 @@ refresh_price = function (text) {
         curData = priceData[cur];
         bid_price[cur] = curData[0];
         ask_price[cur] = curData[1];
-        amt_limit[cur] = curData[2];
+        amt_limit_out[cur] = curData[2];
+        amt_limit_in[cur] = curData[3];
         if (pubnub.$('price_tr_'+cur)) {
           pubnub.$('price_td1_'+cur).innerHTML=curData[0];
           pubnub.$('price_td2_'+cur).innerHTML=curData[1];
           pubnub.$('price_td3_'+cur).innerHTML=curData[2];
+          pubnub.$('price_td4_'+cur).innerHTML=curData[3];
         } else {
           curTR = '<tr id="price_tr_' + cur + '"><td>'+cur+'</td>'
                 + '<td id="price_td1_'+cur+'">'+curData[0]+'</td>'
                 + '<td id="price_td2_'+cur+'">'+curData[1]+'</td>'
-                + '<td id="price_td3_'+cur+'">'+curData[2]+'</td></tr>';
+                + '<td id="price_td3_'+cur+'">'+curData[2]+'</td>'
+                + '<td id="price_td4_'+cur+'">'+curData[3]+'</td></tr>';
           tab.innerHTML += curTR;
         }
         
