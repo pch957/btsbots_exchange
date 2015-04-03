@@ -1,0 +1,171 @@
+{{extend 'layout.html'}}
+<div align="left">
+<div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('Place Order')}}</b></div>
+<div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div>
+{{=form}}
+
+<div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('transaction history')}}</b></div>
+<div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div>
+<table id="transaction_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
+<tbody><tr>
+<th width="10%">{{=T('Time')}}</th>
+<th width="5%">{{=T('Block')}}</th>
+<th width="5%">{{=T('Trx ID')}}</th>
+<th width="50%">{{=T('Description')}}</th>
+</table>
+
+<script src="http://cdn.pubnub.com/pubnub.min.js"></script>
+<script type="text/javascript">
+var max_amount_a = 0;
+var max_amount_b = 0;
+
+var pubnub = PUBNUB.init({
+  publish_key   : '',
+  subscribe_key : 'sub-c-de8917b4-c156-11e4-b1db-0619f8945a4f'
+});
+
+function generate_link() {
+  //bts:to_id/transfer/amount/1.23/asset/USD/memo/xxx
+  var my_account = "{{=my_account}}"
+  var amount = document.fm.amount.value;
+  var memo = document.fm.account.value;
+  var operation = document.fm.operation.value;
+  var withdraw = "{{=withdraw}}";
+  var deposit = "{{=deposit}}";
+  var pay_link
+  if (memo == "") {
+      alert("please input receive account");
+      return false;
+  }
+  if(operation == withdraw){
+    if (amount > max_amount_b) {
+      alert("No enough {{=asset_a}}");
+      return false;
+    }
+    pay_link = "{{=network_a}}:{{=my_account}}/transfer/amount/" + amount + "/asset/{{=asset_a}}/memo/" + memo;
+  }else{
+    if (amount > max_amount_a) {
+      alert("No enough {{=asset_b}}");
+      return false;
+    }
+    pay_link = "{{=network_b}}:{{=my_account}}/transfer/amount/" + amount + "/asset/{{=asset_b}}/memo/" + memo;
+  }
+  var link_id = 'pay_link' + new Date();
+  var link_div = document.getElementById("link_div");
+  link_div.innerHTML = "<a id='" + link_id + "' href='" + pay_link + "'>Click here to Pay</a>";
+  pubnub.$(link_id).click();
+}
+
+init_balance = function (text) {
+  refresh_balance(text[0][0]);
+}
+
+refresh_balance = function (text) { 
+  if (!text) return;
+  max_amount_a = text[0];
+  max_amount_b = text[1];
+  refresh_comment()
+}
+
+refresh_comment= function () { 
+  var operation = document.fm.operation.value;
+  var amount = document.fm.amount.value;
+  var account = document.fm.account.value;
+  var withdraw = "{{=withdraw}}";
+  var deposit = "{{=deposit}}";
+    if(operation == withdraw){
+      comment="使用 {{=network_a}} 钱包发送 "+amount+" {{=asset_a}} 到 {{=my_account}}, memo 填写 {{=network_b}} 钱包的收款帐号";
+      limit=max_amount_b.toFixed(0) + " {{=asset_a}}"
+      }else{
+      comment="使用 {{=network_b}} 钱包发送 "+amount+" {{=asset_b}} 到 {{=my_account}}, memo 填写 {{=network_a}} 钱包的收款帐号";
+      limit=max_amount_a.toFixed(0) + " {{=asset_b}}"
+      }
+    pubnub.$('comment').innerHTML =comment;
+    pubnub.$('limit').innerHTML = limit;
+};
+
+init_history = function (text) {
+  refresh_history(text[0]);
+};
+
+Date.prototype.format = function(format) {
+   var date = {
+     "M+": this.getMonth() + 1,
+     "d+": this.getDate(),
+     "h+": this.getHours(),
+     "m+": this.getMinutes(),
+     "s+": this.getSeconds(),
+     "q+": Math.floor((this.getMonth() + 3) / 3),
+     "S+": this.getMilliseconds()
+   };
+   if (/(y+)/i.test(format)) {
+     format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+   }
+   for (var k in date) {
+     if (new RegExp("(" + k + ")").test(format)) {
+       format = format.replace(RegExp.$1, RegExp.$1.length == 1
+       ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+     }
+   }
+   return format;
+}
+
+time_format = function (text) {
+   time = new Date(text+"Z")
+   //time = new Date(time.getTime() - time.getTimezoneOffset()*60000)
+   time_str = time.format('MM-dd hh:mm:ss')
+   return time_str;
+};
+
+refresh_history = function (text) {
+      if (!text) return;
+      tab = pubnub.$('transaction_history');
+      var hisData = text;
+      if (typeof hisData[0] === 'string') {
+        hisData = [hisData];
+      }
+      hisData.sort();
+      var trxid_last = ""
+      for (index in hisData) {
+        data = hisData[index];
+        time = time_format(data.shift())
+        blockid = data.shift();
+        trxid = data.shift();
+        if(trxid == trxid_last) continue;
+        trxid_last = trxid;
+        desc = data.shift();
+        dataTR = tab.insertRow(1);
+        dataTR.id = "history_tr_"+time;
+        dataTR.insertCell(0).innerHTML = time;
+        dataTR.insertCell(1).innerHTML = blockid;
+        dataTR.insertCell(2).innerHTML = trxid;
+        dataTR.insertCell(3).innerHTML = desc;
+      } 
+      try {
+        while (true) {
+          tab.deleteRow(102);
+        }
+      } catch (e) {
+      }
+
+};
+
+pubnub.history({
+    channel : '{{=asset_b}}_gateway_balance',
+    count : 1,
+    callback : init_balance
+});
+pubnub.history({
+    channel : '{{=asset_b}}_gateway_history',
+    count : 10,
+    callback : init_history
+});
+pubnub.subscribe({
+    channel : '{{=asset_b}}_gateway_balance',
+    callback : refresh_balance
+});
+pubnub.subscribe({
+    channel : '{{=asset_b}}_gateway_history',
+    callback : refresh_history
+});
+</script>

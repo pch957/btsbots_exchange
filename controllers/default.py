@@ -48,6 +48,34 @@ def auction():
     #response.flash = T('transfer BTS if you want to sell, others for buy.')
     return dict(form=form, market=market, account=account, chanel_prefix=chanel_prefix)
 
+def gateway():
+    if "asset" in request.vars:
+      asset= request.vars['asset'].upper()
+    else:
+      asset = "PLS"
+    if asset == "PLS":
+      network_a = "bts"
+      network_b = "pls"
+      asset_a = "BTSBOTS.PLS"
+      asset_b = "PLS"
+      my_account = "pls.btsbots"
+    else:
+      network_tom = "bts"
+      network_jerry = "pls"
+    form = FORM(TABLE(
+      TR(T('operation:'),SELECT(T('deposit'),T('withdraw'), _name="operation",_id="operation",_onchange="javascript:refresh_comment();")),
+      TR(T('amount:'),INPUT(_id="amount",_name="amount",_onkeyup="javascript:refresh_comment();",_onchange="javascript:refresh_comment();",value=1),
+      TT(_id="asset"),T('Max')+':',B(_id="limit")),
+
+      TR(T('account:'),
+      INPUT(_id="account",_name="account",_onkeyup="javascript:refresh_comment();",_onchange="javascript:refresh_comment();"))),
+      (INPUT(_type='button', _value=T("confirm"),  _onclick="javascript:generate_link()")),
+      DIV(_id="link_div",_style="display:none"),
+      T('Comment')+':', TT(_id="comment"),
+      _id="fm", _name="fm")
+    return dict(form=form, asset=asset, withdraw=T('withdraw'),deposit=T('deposit'),network_a=network_a,
+        network_b=network_b,asset_a=asset_a,asset_b=asset_b, my_account=my_account)
+
 def mmaker():
     return dict()
 
