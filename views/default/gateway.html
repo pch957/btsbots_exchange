@@ -74,12 +74,22 @@ refresh_comment= function () {
   var withdraw = "{{=withdraw}}";
   var deposit = "{{=deposit}}";
     if(operation == withdraw){
-      comment="使用 {{=network_a}} 钱包发送 "+amount+" {{=asset_a}} 到 {{=my_account}}, memo 填写 {{=network_b}} 钱包的收款帐号";
-      limit=max_amount_b.toFixed(0) + " {{=asset_a}}"
-      }else{
-      comment="使用 {{=network_b}} 钱包发送 "+amount+" {{=asset_b}} 到 {{=my_account}}, memo 填写 {{=network_a}} 钱包的收款帐号";
-      limit=max_amount_a.toFixed(0) + " {{=asset_b}}"
+      if(navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage) == "zh-CN"){
+        comment="使用 {{=network_a}} 钱包发送 "+amount+" {{=asset_a}} 到 {{=my_account}}, memo 填写 {{=network_b}} 钱包的收款帐号";
+      } else {
+        comment="send "+amount+" {{=asset_a}} to {{=my_account}} from {{=network_a}} wallet, and we will send "
+        + amount+" {{=asset_b}} to account <text style='color:#ff0000;'>["+account+ "] </text>from {{=network_b}} wallet";
       }
+      limit=max_amount_b.toFixed(0) + " {{=asset_a}}"
+    }else{
+      if(navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage) == "zh-CN"){
+        comment="使用 {{=network_b}} 钱包发送 "+amount+" {{=asset_b}} 到 {{=my_account}}, memo 填写 {{=network_a}} 钱包的收款帐号";
+      } else {
+        comment="send "+amount+" {{=asset_b}} to {{=my_account}} from {{=network_b}} wallet, and we will send "
+        + amount+" {{=asset_a}} to account <text style='color:#ff0000;'>["+account+ "] </text>from {{=network_a}} wallet";
+      }
+      limit=max_amount_a.toFixed(0) + " {{=asset_b}}"
+    }
     pubnub.$('comment').innerHTML =comment;
     pubnub.$('limit').innerHTML = limit;
 };
