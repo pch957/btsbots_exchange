@@ -27,6 +27,10 @@ def auction():
       asset = "TRADE.BTC"
       account = "btc.auction.btsbots"
       chanel_prefix = "auction_btc"
+    elif market == "PLS":
+      asset = "BTSBOTS.PLS"
+      account = "pls.auction.btsbots"
+      chanel_prefix = "auction_pls"
     else:
       asset = "BTS"
       account = "auction.btsbots"
