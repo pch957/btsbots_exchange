@@ -14,15 +14,9 @@
 <th width="50%">{{=T('Description')}}</th>
 </table>
 
-<script src="http://cdn.pubnub.com/pubnub.min.js"></script>
 <script type="text/javascript">
 var max_amount_a = 0;
 var max_amount_b = 0;
-
-var pubnub = PUBNUB.init({
-  publish_key   : '',
-  subscribe_key : 'sub-c-de8917b4-c156-11e4-b1db-0619f8945a4f'
-});
 
 function generate_link() {
   //bts:to_id/transfer/amount/1.23/asset/USD/memo/xxx
@@ -53,11 +47,7 @@ function generate_link() {
   var link_id = 'pay_link' + new Date();
   var link_div = document.getElementById("link_div");
   link_div.innerHTML = "<a id='" + link_id + "' href='" + pay_link + "'>Click here to Pay</a>";
-  pubnub.$(link_id).click();
-}
-
-init_balance = function (text) {
-  refresh_balance(text[0][0]);
+  document.getElementById(link_id).click();
 }
 
 refresh_balance = function (text) { 
@@ -90,12 +80,8 @@ refresh_comment= function () {
       }
       limit=max_amount_a.toFixed(0) + " {{=asset_b}}"
     }
-    pubnub.$('comment').innerHTML =comment;
-    pubnub.$('limit').innerHTML = limit;
-};
-
-init_history = function (text) {
-  refresh_history(text[0]);
+    document.getElementById('comment').innerHTML =comment;
+    document.getElementById('limit').innerHTML = limit;
 };
 
 Date.prototype.format = function(format) {
@@ -127,9 +113,9 @@ time_format = function (text) {
    return time_str;
 };
 
-refresh_history = function (text) {
+refresh_trx = function (text) {
       if (!text) return;
-      tab = pubnub.$('transaction_history');
+      tab = document.getElementById('transaction_history');
       var hisData = text;
       if (typeof hisData[0] === 'string') {
         hisData = [hisData];
@@ -158,23 +144,48 @@ refresh_history = function (text) {
       }
 
 };
+</script>
 
-pubnub.history({
-    channel : '{{=asset_b}}_gateway_balance',
-    count : 1,
-    callback : init_balance
-});
-pubnub.history({
-    channel : '{{=asset_b}}_gateway_history',
-    count : 10,
-    callback : init_history
-});
-pubnub.subscribe({
-    channel : '{{=asset_b}}_gateway_balance',
-    callback : refresh_balance
-});
-pubnub.subscribe({
-    channel : '{{=asset_b}}_gateway_history',
-    callback : refresh_history
-});
+<script src="{{=URL('static','js/autobahn.min')}}"></script>
+<script type="text/javascript">
+var init_done = false;
+
+var connection = new autobahn.Connection({
+  url: 'ws://btsbots.com:8080/ws',
+    realm: 'realm1'
+}
+);
+
+connection.onopen = function (session) {
+
+   function on_trx(args, kwargs, details) {
+      refresh_trx(args[0]);
+      console.log("Got trx: " + args);
+   }
+   session.subscribe('btsbots.gateway.{{=asset_b}}.trx', on_trx);
+
+   function on_balance(args, kwargs, details) {
+      refresh_balance(args[0]);
+      console.log("Got trx: " + args);
+   }
+   session.subscribe('btsbots.gateway.{{=asset_b}}.balance', on_balance);
+
+   if (init_done == false) {
+     session.call('btsbots.get_history', ['btsbots.gateway.{{=asset_b}}.trx',30]).then(
+        function (res) {
+           refresh_trx(res);
+           console.log("call trx_history: " , res);
+        }
+     );
+     session.call('btsbots.get_last', ['btsbots.gateway.{{=asset_b}}.balance']).then(
+        function (res) {
+           refresh_balance(res);
+           console.log("call trx_history: " , res);
+        }
+     );
+     init_done = true;
+   }
+};
+
+connection.open();
 </script>
