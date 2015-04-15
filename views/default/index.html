@@ -160,14 +160,7 @@ var amt_limit_out = {};
 var amt_limit_in = {};
 
 
-var user = "public";
-var key = "publc";
 var init_done = false;
-
-
-function onchallenge (session, method, extra) {
-    return autobahn.auth_cra.sign(key, extra.challenge);
-}
 
 var connection = new autobahn.Connection({
   url: 'ws://btsbots.com:8080/ws',
@@ -179,28 +172,28 @@ connection.onopen = function (session) {
 
    function on_asset(args, kwargs, details) {
       refresh_price (args[0]);
-      console.log("Got asset: " + args[0]);
+      //console.log("Got asset: " + args[0]);
    }
    session.subscribe('btsbots.exchange.asset', on_asset);
 
    function on_trx(args, kwargs, details) {
       refresh_trx(args[0]);
-      console.log("Got trx: " + args);
+      //console.log("Got trx: " + args);
    }
    session.subscribe('btsbots.exchange.trx', on_trx);
 
-   if (true) {
+   if (init_done == false) {
      session.call('btsbots.get_last', ['btsbots.exchange.asset']).then(
         function (res) {
            refresh_price (res);
-           console.log("call asset: " + res);
+           //console.log("call asset: " + res);
         }
      );
   
      session.call('btsbots.get_history', ['btsbots.exchange.trx',30]).then(
         function (res) {
            refresh_trx(res);
-           console.log("call trx_history: " , res);
+           //console.log("call trx_history: " , res);
         }
      );
      init_done = true;
