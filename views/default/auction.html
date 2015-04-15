@@ -67,12 +67,7 @@
 		</div>
 	</div>
 
-<script src="http://cdn.pubnub.com/pubnub.min.js"></script>
 <script type="text/javascript">
-var pubnub = PUBNUB.init({
-  publish_key   : '',
-  subscribe_key : 'sub-c-de8917b4-c156-11e4-b1db-0619f8945a4f'
-});
 var bid_price = {};
 var ask_price = {};
 var amt_limit = {};
@@ -88,10 +83,6 @@ if (market == "BTC") {
   precision_volume = 4;
   }
 
-init_order_book = function (text) {
-  refresh_order_book(text[0][0]);
-};
-
 refresh_order_book = function (text) {
       if (!text) return;
       order_book = text
@@ -99,8 +90,8 @@ refresh_order_book = function (text) {
       }
 
 _refresh_order_book = function (text) {
-      tab_bid = pubnub.$('order_book_bid');
-      tab_ask = pubnub.$('order_book_ask');
+      tab_bid = document.getElementById('order_book_bid');
+      tab_ask = document.getElementById('order_book_ask');
       var order_bid_list = text["bid"];
       var order_ask_list = text["ask"];
       var rowCount = tab_bid.rows.length;
@@ -136,10 +127,6 @@ _refresh_order_book = function (text) {
       } 
 };
 
-init_trade_history = function (text) {
-  refresh_trade_history(text[0]);
-};
-
 Date.prototype.format = function(format) {
    var date = {
      "M+": this.getMonth() + 1,
@@ -171,7 +158,7 @@ time_format = function (text) {
 
 refresh_trade_history = function (text) {
       if (!text) return;
-      tab = pubnub.$('trade_history');
+      tab = document.getElementById('trade_history');
       var hisData = text;
       if (typeof hisData[0] === 'string') {
         hisData = [hisData];
@@ -201,13 +188,9 @@ refresh_trade_history = function (text) {
       }
 };
 
-init_trans_history = function (text) {
-  refresh_trans_history(text[0]);
-};
-
 refresh_trans_history = function (text) {
       if (!text) return;
-      tab = pubnub.$('transaction_history');
+      tab = document.getElementById('transaction_history');
       var hisData = text;
       if (typeof hisData[0] === 'string') {
         hisData = [hisData];
@@ -237,77 +220,21 @@ refresh_trans_history = function (text) {
       }
 };
 
-init_result = function (text) {
-  refresh_result(text[0][0]);
-  _refresh_order_book(order_book)
-  pubnub.$('price_limit').value= excute_price.toFixed(precision_price);
-  refresh_comment();
-};
-
-refresh_result = function (text) {
+refresh_trade_cur = function (text) {
   if (!text) return;
   excute_price = text[0]
-  pubnub.$('excute_price').innerHTML=text[0].toFixed(precision_price);
+  document.getElementById('excute_price').innerHTML=text[0].toFixed(precision_price);
   excute_volume = text[1]
-  pubnub.$('excute_volume').innerHTML=text[1].toFixed(precision_volume);
-};
-
-init_excute_time = function (text) {
-  refresh_excute_time(text[0][0]);
+ document.getElementById('excute_volume').innerHTML=text[1].toFixed(precision_volume);
 };
 
 refresh_excute_time = function (text) {
   if (!text) return;
-  pubnub.$('end_block').innerHTML=text[1];
+  document.getElementById('end_block').innerHTML=text[1];
   time = new Date(text[2]+"Z")
   excute_time = time.getTime();
 };
 
-pubnub.history({
-    channel : '{{=chanel_prefix}}_trade_history',
-    count : 10,
-    callback : init_trade_history
-});
-pubnub.subscribe({
-    channel : '{{=chanel_prefix}}_trade_history',
-    callback : refresh_trade_history
-});
-pubnub.history({
-    channel : '{{=chanel_prefix}}_transaction_history',
-    count : 10,
-    callback : init_trans_history
-});
-pubnub.subscribe({
-    channel : '{{=chanel_prefix}}_transaction_history',
-    callback : refresh_trans_history
-});
-pubnub.history({
-    channel : '{{=chanel_prefix}}_order_book',
-    count : 1,
-    callback : init_order_book
-});
-pubnub.subscribe({
-    channel : '{{=chanel_prefix}}_order_book',
-    callback : refresh_order_book
-});
-pubnub.history({
-    channel : '{{=chanel_prefix}}_match_result',
-    count : 1,
-    callback : init_result
-});
-pubnub.subscribe({
-    channel : '{{=chanel_prefix}}_match_result',
-    callback : refresh_result
-});
-pubnub.history({
-    channel : '{{=chanel_prefix}}_excute_time',
-    count : 1,
-    callback : init_excute_time
-});
-pubnub.subscribe({
-    channel : '{{=chanel_prefix}}_excute_time',
-    callback : refresh_excute_time
-});
 function generate_link() {
   //bts:to_id/transfer/amount/1.23/asset/USD/memo/xxx
   var d_amt = document.fm.deposit_amount.value;
@@ -320,7 +247,7 @@ function generate_link() {
     var link_id = 'pay_link' + new Date();
     var link_div = document.getElementById("link_div");
     link_div.innerHTML = "<a id='" + link_id + "' href='" + pay_link + "'>Click here to Pay</a>";
-    pubnub.$(link_id).click();
+    document.getElementById(link_id).click();
   } catch (e) {
   }
 }
@@ -342,22 +269,105 @@ function refresh_comment() {
     if(navigator.languages ? navigator.languages[0] : (navigator.language || navigator.userLanguage) == "zh-CN"){
       comment= comment1_cn + "为完成订单，请使用bts钱包发送 " + d_amt +" "+  d_cur + " 到 " + account + ", memo填写: " + d_price;
       }
-    pubnub.$('comment').innerHTML =comment 
+    document.getElementById('comment').innerHTML =comment 
     if(d_price / excute_price < 0.8 || d_price / excute_price  > 1.2){
-      pubnub.$('price_limit').style= "color:#ff0000;";
+      document.getElementById('price_limit').style= "color:#ff0000;";
       }else{
-     pubnub.$('price_limit').style= "color:#000000;";
+     document.getElementById('price_limit').style= "color:#000000;";
      }
   } catch (e) {
   }
+}
 
 function ShowCountDown() {
   now = new Date()
   var countdown = ((excute_time -now.getTime())/1000+12).toFixed(0);
   if (countdown <= 0) countdown = 0;
-  pubnub.$('end_time').innerHTML=countdown;
+  document.getElementById('end_time').innerHTML=countdown;
 }
 
 window.setInterval(function(){ShowCountDown();}, 1000); 
+</script>
+
+<script src="{{=URL('static','js/autobahn.min')}}"></script>
+<script type="text/javascript">
+var init_done = false;
+
+var connection = new autobahn.Connection({
+  url: 'ws://btsbots.com:8080/ws',
+    realm: 'realm1'
 }
+);
+
+connection.onopen = function (session) {
+
+   function on_excute_time(args, kwargs, details) {
+      refresh_excute_time(args[0]);
+      console.log("Got trx: " + args);
+   }
+   session.subscribe('btsbots.auction.'+market+'.excute_time', on_excute_time);
+
+   function on_match_cur(args, kwargs, details) {
+      refresh_trade_cur(args[0]);
+      console.log("Got trx: " + args);
+   }
+   session.subscribe('btsbots.auction.'+market+'.match_cur', on_match_cur);
+
+   function on_match_result(args, kwargs, details) {
+      refresh_trade_history(args[0]);
+      console.log("Got trx: " + args);
+   }
+   session.subscribe('btsbots.auction.'+market+'.match_result', on_match_result);
+
+   function on_trx(args, kwargs, details) {
+      refresh_trans_history(args[0]);
+      console.log("Got trx: " + args);
+   }
+   session.subscribe('btsbots.auction.'+market+'.trx', on_trx);
+
+   function on_order_book(args, kwargs, details) {
+      refresh_order_book(args[0]);
+      console.log("Got trx: " + args);
+   }
+   session.subscribe('btsbots.auction.'+market+'.order_book', on_order_book);
+
+   if (init_done == false) {
+     session.call('btsbots.get_last', ['btsbots.auction.'+market+'.excute_time']).then(
+        function (res) {
+           refresh_excute_time(res);
+           console.log("call trx_history: " , res);
+        }
+     );
+     session.call('btsbots.get_last', ['btsbots.auction.'+market+'.match_cur']).then(
+        function (res) {
+           refresh_trade_cur(res);
+           _refresh_order_book(order_book)
+           document.getElementById('price_limit').value= excute_price.toFixed(precision_price);
+           refresh_comment();
+           console.log("call trx_history: " , res);
+        }
+     );
+     session.call('btsbots.get_history', ['btsbots.auction.'+market+'.match_result',10]).then(
+        function (res) {
+           refresh_trade_history(res);
+           console.log("call trx_history: " , res);
+        }
+     );
+     session.call('btsbots.get_history', ['btsbots.auction.'+market+'.trx',10]).then(
+        function (res) {
+           refresh_trans_history(res);
+           console.log("call trx_history: " , res);
+        }
+     );
+     session.call('btsbots.get_last', ['btsbots.auction.'+market+'.order_book']).then(
+        function (res) {
+           refresh_order_book(res);
+           console.log("call trx_history: " , res);
+        }
+     );
+     init_done = true;
+   }
+};
+
+connection.open();
 </script>
