@@ -160,13 +160,13 @@ connection.onopen = function (session) {
 
    function on_trx(args, kwargs, details) {
       refresh_trx(args[0]);
-      console.log("Got trx: " + args);
+      //console.log("Got trx: " + args);
    }
    session.subscribe('btsbots.gateway.{{=asset_b}}.trx', on_trx);
 
    function on_balance(args, kwargs, details) {
       refresh_balance(args[0]);
-      console.log("Got trx: " + args);
+      //console.log("Got trx: " + args);
    }
    session.subscribe('btsbots.gateway.{{=asset_b}}.balance', on_balance);
 
@@ -174,13 +174,13 @@ connection.onopen = function (session) {
      session.call('btsbots.get_history', ['btsbots.gateway.{{=asset_b}}.trx',30]).then(
         function (res) {
            refresh_trx(res);
-           console.log("call trx_history: " , res);
+           //console.log("call trx_history: " , res);
         }
      );
      session.call('btsbots.get_last', ['btsbots.gateway.{{=asset_b}}.balance']).then(
         function (res) {
            refresh_balance(res);
-           console.log("call trx_history: " , res);
+           //console.log("call trx_history: " , res);
         }
      );
      init_done = true;

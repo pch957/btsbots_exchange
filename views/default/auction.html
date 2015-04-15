@@ -303,31 +303,31 @@ connection.onopen = function (session) {
 
    function on_excute_time(args, kwargs, details) {
       refresh_excute_time(args[0]);
-      console.log("Got trx: " + args);
+      //console.log("Got trx: " + args);
    }
    session.subscribe('btsbots.auction.'+market+'.excute_time', on_excute_time);
 
    function on_match_cur(args, kwargs, details) {
       refresh_trade_cur(args[0]);
-      console.log("Got trx: " + args);
+      //console.log("Got trx: " + args);
    }
    session.subscribe('btsbots.auction.'+market+'.match_cur', on_match_cur);
 
    function on_match_result(args, kwargs, details) {
       refresh_trade_history(args[0]);
-      console.log("Got trx: " + args);
+      //console.log("Got trx: " + args);
    }
    session.subscribe('btsbots.auction.'+market+'.match_result', on_match_result);
 
    function on_trx(args, kwargs, details) {
       refresh_trans_history(args[0]);
-      console.log("Got trx: " + args);
+      //console.log("Got trx: " + args);
    }
    session.subscribe('btsbots.auction.'+market+'.trx', on_trx);
 
    function on_order_book(args, kwargs, details) {
       refresh_order_book(args[0]);
-      console.log("Got trx: " + args);
+      //console.log("Got trx: " + args);
    }
    session.subscribe('btsbots.auction.'+market+'.order_book', on_order_book);
 
@@ -335,7 +335,7 @@ connection.onopen = function (session) {
      session.call('btsbots.get_last', ['btsbots.auction.'+market+'.excute_time']).then(
         function (res) {
            refresh_excute_time(res);
-           console.log("call trx_history: " , res);
+           //console.log("call trx_history: " , res);
         }
      );
      session.call('btsbots.get_last', ['btsbots.auction.'+market+'.match_cur']).then(
@@ -344,25 +344,25 @@ connection.onopen = function (session) {
            _refresh_order_book(order_book)
            document.getElementById('price_limit').value= excute_price.toFixed(precision_price);
            refresh_comment();
-           console.log("call trx_history: " , res);
+           //console.log("call trx_history: " , res);
         }
      );
      session.call('btsbots.get_history', ['btsbots.auction.'+market+'.match_result',10]).then(
         function (res) {
            refresh_trade_history(res);
-           console.log("call trx_history: " , res);
+           //console.log("call trx_history: " , res);
         }
      );
      session.call('btsbots.get_history', ['btsbots.auction.'+market+'.trx',10]).then(
         function (res) {
            refresh_trans_history(res);
-           console.log("call trx_history: " , res);
+           //console.log("call trx_history: " , res);
         }
      );
      session.call('btsbots.get_last', ['btsbots.auction.'+market+'.order_book']).then(
         function (res) {
            refresh_order_book(res);
-           console.log("call trx_history: " , res);
+           //console.log("call trx_history: " , res);
         }
      );
      init_done = true;

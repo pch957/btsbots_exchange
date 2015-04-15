@@ -102,7 +102,7 @@ connection.onopen = function (session) {
 
    function on_trx(args, kwargs, details) {
       refresh_trx(args[0]);
-      console.log("Got trx: " + args);
+      //console.log("Got trx: " + args);
    }
    session.subscribe('btsbots.marketmaker.trx', on_trx);
 
@@ -110,7 +110,7 @@ connection.onopen = function (session) {
      session.call('btsbots.get_history', ['btsbots.marketmaker.trx',50]).then(
         function (res) {
            refresh_trx(res);
-           console.log("call trx_history: " , res);
+           //console.log("call trx_history: " , res);
         }
      );
      init_done = true;
