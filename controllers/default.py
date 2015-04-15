@@ -92,3 +92,5 @@ def join():
 def error():
     return dict()
 
+def botscny():
+    return dict()
