@@ -189,15 +189,15 @@ connection.onopen = function (session) {
    }
    session.subscribe('btsbots.exchange.trx', on_trx);
 
-   if (init_done == false) {
-     session.call('btsbots.exchange.get_asset').then(
+   if (true) {
+     session.call('btsbots.get_last', ['btsbots.exchange.asset']).then(
         function (res) {
            refresh_price (res);
            console.log("call asset: " + res);
         }
      );
   
-     session.call('btsbots.exchange.get_trx_history').then(
+     session.call('btsbots.get_history', ['btsbots.exchange.trx',30]).then(
         function (res) {
            refresh_trx(res);
            console.log("call trx_history: " , res);
