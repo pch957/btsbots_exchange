@@ -62,6 +62,7 @@
 'CNY/BTC': 'CNY/BTC',
 'CNY/BTS': 'CNY/BTS',
 'CNY/PLS': 'CNY/PLS',
+'CNY<->BOTSCNY': 'CNY<->BOTSCNY',
 'Command': 'Command',
 'Comment': '注释',
 'comment': 'comment',
