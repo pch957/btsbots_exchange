@@ -88,12 +88,19 @@ time_format = function (text) {
 </script>
 
 
-<script src="{{=URL('static','js/autobahn.min')}}"></script>
+<script src="http://pusher.btsbots.com/autobahn.min.js"></script>
 <script type="text/javascript">
 var init_done = false;
 
+var ws_uri;
+if (document.location.protocol == "http:") {
+  ws_uri = 'ws://pusher.btsbots.com:8080/ws';
+  }else{
+  ws_uri = 'ws://pusher.btsbots.com:7080/ws';
+  }
+
 var connection = new autobahn.Connection({
-  url: 'ws://btsbots.com:8080/ws',
+    url: ws_uri,
     realm: 'realm1'
 }
 );
