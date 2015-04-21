@@ -152,9 +152,9 @@ var init_done = false;
 
 var ws_uri;
 if (document.location.protocol == "http:") {
-  ws_uri = 'ws://pusher.btsbots.com:8080/ws';
+  ws_uri = 'ws://pusher.btsbots.com/ws';
   }else{
-  ws_uri = 'ws://pusher.btsbots.com:7080/ws';
+  ws_uri = 'wss://pusher.btsbots.com/ws';
   }
 
 var connection = new autobahn.Connection({

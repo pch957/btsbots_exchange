@@ -178,8 +178,15 @@ try {
    // be included without a module system
 }
 
+var ws_uri;
+if (document.location.protocol == "http:") {
+  ws_uri = 'ws://pusher.btsbots.com/ws';
+  }else{
+  ws_uri = 'wss://pusher.btsbots.com/ws';
+  }
+
 var connection = new autobahn.Connection({
-   url: 'ws://pusher.btsbots.com:8080/ws',
+    url: ws_uri,
    realm: 'realm1'}
 );
 
