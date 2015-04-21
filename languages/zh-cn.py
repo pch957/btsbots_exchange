@@ -306,4 +306,9 @@
 'you can get TRADE.BTC from http://blocktrades.us': 'you can get TRADE.BTC from http://blocktrades.us',
 'You can modify this application and adapt it to your needs': '请根据您的需要修改本程序',
 'You visited the url %s': 'You visited the url %s',
+'WalletMarket': '内盘市场',
+'height of blockchain is': '当前区块号',
+'Balance': '额度',
+'match balance': '成交额',
+'market': '市场',
 }

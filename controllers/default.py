@@ -80,6 +80,9 @@ def gateway():
     return dict(form=form, asset=asset, withdraw=T('withdraw'),deposit=T('deposit'),network_a=network_a,
         network_b=network_b,asset_a=asset_a,asset_b=asset_b, my_account=my_account)
 
+def wmarket():
+    return dict()
+
 def mmaker():
     return dict()
 

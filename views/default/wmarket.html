@@ -1,0 +1,270 @@
+{{extend 'layout.html'}}
+
+<div>
+{{=T('market')}}: 
+<select id="market" name="market" onchange="javascript:change_market()">
+    <option value="CNY/BTS" selected="true">CNY/BTS</option>
+    <option value="BOTSCNY/BTS">BOTSCNY/BTS</option>
+    <option value="BDR.AAPL/CNY">BDR.AAPL/CNY</option>
+    <option value="USD/BTS">USD/BTS</option>
+    <option value="GOLD/BTS">GOLD/BTS</option>
+    <option value="BTC/BTS">BTC/BTS</option>
+  </select>
+{{=T('height of blockchain is')}}: <text id=height></text>
+</div>
+
+			<div>
+				<div style="margin-right:25px;float:left;width:35%">
+					<div style="margin: 5px 0;">
+            <table height="25" width="428"><tbody><tr><td style="font-size:16px;color:#009900;border:0px;float:left;line-height:25px;text-align:left;" valign="middle" width="318"><b>{{=T('bid')}}</b></td><td style="border:0px;text-align:right" valign="middle" width="110" align="right"></td></tr></tbody></table>
+					</div>
+					<div style="clear:both;height:1px;background:#009900;width:100%;margin: 5px 0 0 0"></div>
+					<table id="order_book_bid" class="tableStyle1" width="428">
+						<tbody><tr>
+                <th width="120">{{=T('Price')}}(<span class="mkType"><text name="quote">CNY</text>/<text name="base">BTS</text></span>)</th>
+                <th width="120">{{=T('Volume')}}(<span class="coinName"><text name="base">BTS</text></span>)</th>
+                <th width="120">{{=T('Balance')}}(<span class="coinName"><text name="quote">CNY</text></span>)</th>
+						</tr>
+						
+        </tbody></table>
+				</div>
+				<div style="float:left;width:35%">
+					<div style="margin: 5px 0;">
+            <table height="25" width="428"><tbody><tr><td style="font-size:16px;color:#D01515;border:0px;float:left;line-height:25px;text-align:left;" valign="middle" width="318"><b>{{=T('ask')}}</b></td><td style="border:0px;text-align:right" valign="middle" width="110" align="right"></td></tr></tbody></table>
+					</div>
+					<div style="clear:both;height:1px;background:#D01515;width:100%;margin: 5px 0 0 0"></div>
+					<table id="order_book_ask" class="tableStyle1" width="428">
+            <th width="120">{{=T('Price')}}(<span class="mkType"><text name="quote">CNY</text>/<text name="base">BTS</text></span>)</th>
+            <th width="120">{{=T('Volume')}}(<span class="coinName"><text name="base">BTS</text></span>)</th>
+            <th width="120">{{=T('Balance')}}(<span class="coinName"><text name="quote">CNY</text></span>)</th>
+						</tr>
+						
+        </tbody></table>
+				</div>
+			</div>
+			</div>
+        <p></p>
+			<div>
+        <div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('trade history')}}</b></div>
+				<div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div>
+				<table id="transaction_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
+					<tbody><tr>
+<th>{{=T('Time')}}</th>
+<th>{{=T('Block')}}</th>
+<th>{{=T('Type')}}</th>
+<th>{{=T('Price')}}(<text name="quote">CNY</text>/<text name="base">BTS</text>)</th>
+<th>{{=T('match volume')}}(<text name="base">BTS</text>)</th>
+<th>{{=T('match balance')}}(<text name="quote">CNY</text>)</th>
+					</tr>
+					
+          </tbody></table>
+			</div>
+<script src="http://pusher.btsbots.com/autobahn.min.js"></script>
+<script type="text/javascript">
+var market = document.getElementById('market').value;
+var last_market = market;
+var init_done = false;
+var active_session;
+var current_subscription = [];
+
+change_market = function(){
+  market = document.getElementById('market').value;
+  if(market == last_market){
+    return;
+  }else{
+    quite_market(last_market);
+    init_market(market);
+    last_market = market;
+}
+}
+
+refresh_order_book = function (text) {
+      var precision_price = 7
+      tab_bid = document.getElementById('order_book_bid');
+      tab_ask = document.getElementById('order_book_ask');
+      var order_bid_list = text["bid"];
+      var order_ask_list = text["ask"];
+      var rowCount = tab_bid.rows.length;
+      for (var index = rowCount -1; index>0; index--) {
+         tab_bid.deleteRow(index);
+         }
+      var rowCount = tab_ask.rows.length;
+      for (var index = rowCount -1; index>0; index--) {
+         tab_ask.deleteRow(index);
+         }
+
+      for (index in order_bid_list) {
+        dataTR = tab_bid.insertRow();
+        var price = order_bid_list[index]["price"]
+        var volume = order_bid_list[index]["volume"]
+        var balance = volume * price
+        dataTR.insertCell(0).innerHTML = price.toFixed(precision_price);
+        dataTR.insertCell(1).innerHTML = volume.toFixed(2);
+        dataTR.insertCell(2).innerHTML = balance.toFixed(2);
+      } 
+      for (index in order_ask_list) {
+        dataTR = tab_ask.insertRow();
+        var price = order_ask_list[index]["price"]
+        var volume = order_ask_list[index]["volume"]
+        var balance = volume * price
+        dataTR.insertCell(0).innerHTML = price.toFixed(precision_price);
+        dataTR.insertCell(1).innerHTML = volume.toFixed(2);
+        dataTR.insertCell(2).innerHTML = balance.toFixed(2);
+      } 
+};
+
+Date.prototype.format = function(format) {
+   var date = {
+     "M+": this.getMonth() + 1,
+     "d+": this.getDate(),
+     "h+": this.getHours(),
+     "m+": this.getMinutes(),
+     "s+": this.getSeconds(),
+     "q+": Math.floor((this.getMonth() + 3) / 3),
+     "S+": this.getMilliseconds()
+   };
+   if (/(y+)/i.test(format)) {
+     format = format.replace(RegExp.$1, (this.getFullYear() + '').substr(4 - RegExp.$1.length));
+   }
+   for (var k in date) {
+     if (new RegExp("(" + k + ")").test(format)) {
+       format = format.replace(RegExp.$1, RegExp.$1.length == 1
+       ? date[k] : ("00" + date[k]).substr(("" + date[k]).length));
+     }
+   }
+   return format;
+}
+
+time_format = function (text) {
+   time = new Date(text+"Z")
+   //time = new Date(time.getTime() - time.getTimezoneOffset()*60000)
+   time_str = time.format('MM-dd hh:mm:ss')
+   return time_str;
+}
+refresh_trx = function (text) {
+      var precision_price = 7
+      if (!text) return;
+      tab = document.getElementById('transaction_history');
+      var hisData = text;
+      hisData.sort();
+      for (index in hisData) {
+        data = hisData[index];
+        blockid = data.shift();
+        time = time_format(data.shift())
+        type = data.shift();
+        price = data.shift().toFixed(precision_price);
+        volume = data.shift().toFixed(3);
+        balance = (price*volume).toFixed(3)
+        dataTR = tab.insertRow(1);
+        dataTR.insertCell(0).innerHTML = time;
+        dataTR.insertCell(1).innerHTML = blockid;
+        dataTR.insertCell(2).innerHTML = type;
+        dataTR.insertCell(3).innerHTML = price;
+        dataTR.insertCell(4).innerHTML = volume;
+        dataTR.insertCell(5).innerHTML = balance;
+      } 
+      try {
+        while (true) {
+          tab.deleteRow(41);
+        }
+      } catch (e) {
+      }
+};
+
+try {
+   var autobahn = require('autobahn');
+} catch (e) {
+   // when running in browser, AutobahnJS will
+   // be included without a module system
+}
+
+var connection = new autobahn.Connection({
+   url: 'ws://pusher.btsbots.com:8080/ws',
+   realm: 'realm1'}
+);
+
+quite_market = function() {
+   init_done = false;
+
+   tab = document.getElementById('transaction_history');
+   var rowCount = tab.rows.length;
+   for (var index = rowCount -1; index>0; index--) {
+       tab.deleteRow(index);
+   }
+   //todo ....
+   var count =current_subscription.length ;
+   for (var index = 0; index<count; index++) {
+     active_session.unsubscribe(current_subscription[index]);
+   }
+   current_subscription= [];
+}
+
+init_market = function(market) {
+   myarray = market.split('/'); 
+   quote = myarray[0];
+   base = myarray[1];
+   var prefix = quote + '_' + base;
+   prefix = prefix.replace('.','-');
+   controls = document.getElementsByName('quote');
+   var count = controls.length;
+   for (var index = 0; index < count; index++){
+     controls[index].innerHTML = quote
+   }
+   controls = document.getElementsByName('base');
+   count = controls.length;
+   for (var index = 0; index < count; index++){
+     controls[index].innerHTML = base
+   }
+
+   if (init_done == false) {
+   active_session.call('btsbots.get_last', ['bts.orderbook.'+prefix]).then(
+        function (res) {
+           refresh_order_book(res);
+        }
+   );
+   active_session.call('btsbots.get_history', ['bts.orderbook.'+prefix+".trx",20]).then(
+        function (res) {
+           refresh_trx(res);
+        }
+   );
+   active_session.call('btsbots.get_last', ['bts.blockchain.height']).then(
+        function (res) {
+           document.getElementById('height').innerHTML = res;
+        }
+   );
+
+   init_done = true;
+   }
+
+   function on_order_book(args) {
+      refresh_order_book(args[0]);
+   }
+   active_session.subscribe('bts.orderbook.'+prefix, on_order_book).then(
+       function(subscription) {
+         current_subscription.push(subscription);
+       }
+       );
+
+   function on_trx(args) {
+      refresh_trx([args[0]]);
+   }
+   active_session.subscribe('bts.orderbook.'+prefix+".trx", on_trx).then(
+       function(subscription) {
+         current_subscription.push(subscription);
+       }
+       );
+
+   function on_height(args) {
+      document.getElementById('height').innerHTML = args[0];
+   }
+   active_session.subscribe('bts.blockchain.height', on_height);
+}
+
+connection.onopen = function (session) {
+   console.log("session open");
+   active_session = session;
+   init_market(market)
+};
+
+connection.open();
+</script>

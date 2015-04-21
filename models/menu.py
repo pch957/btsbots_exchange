@@ -8,6 +8,7 @@ submenu = [ (T('CNY/BTS'),False,URL('default','auction',vars=dict(market='BTS'))
 submenu += [ (T('CNY/PLS'),False,URL('default','auction',vars=dict(market='PLS')),[]), ]
 submenu += [ (T('CNY/BTC'),False,URL('default','auction',vars=dict(market='BTC')),[]), ]
 response.menu += [ (T('Auction'),URL('default','auction')==URL(),URL('default','auction',vars=dict(market='BTS')),submenu)]
+response.menu += [ (T('WalletMarket'),URL('default','wmarket')==URL(),URL('default','wmarket'),[])]
 submenu = [ (T('CNY<->BOTSCNY'),False,URL('default','botscny'),[]), ]
 submenu += [ (T('PLS<->BTSBOTS.PLS'),False,URL('default','gateway',vars=dict(asset='PLS')),[]), ]
 response.menu += [ (T('Gateway'),URL('default','botscny')==URL(),URL('default','botscny'),submenu)]
