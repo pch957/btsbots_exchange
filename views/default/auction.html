@@ -289,16 +289,11 @@ function ShowCountDown() {
 window.setInterval(function(){ShowCountDown();}, 1000); 
 </script>
 
-<script src="http://pusher.btsbots.com/autobahn.min.js"></script>
+<script src="https://pusher.btsbots.com/autobahn.min.js"></script>
 <script type="text/javascript">
 var init_done = false;
 
-var ws_uri;
-if (document.location.protocol == "http:") {
-  ws_uri = 'ws://pusher.btsbots.com/ws';
-  }else{
-  ws_uri = 'wss://pusher.btsbots.com/ws';
-  }
+var ws_uri = 'wss://pusher.btsbots.com/ws';
 
 var connection = new autobahn.Connection({
     url: ws_uri,

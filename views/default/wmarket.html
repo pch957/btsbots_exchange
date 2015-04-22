@@ -59,7 +59,7 @@
 					
           </tbody></table>
 			</div>
-<script src="http://pusher.btsbots.com/autobahn.min.js"></script>
+<script src="https://pusher.btsbots.com/autobahn.min.js"></script>
 <script type="text/javascript">
 var market = document.getElementById('market').value;
 var last_market = market;
@@ -178,12 +178,7 @@ try {
    // be included without a module system
 }
 
-var ws_uri;
-if (document.location.protocol == "http:") {
-  ws_uri = 'ws://pusher.btsbots.com/ws';
-  }else{
-  ws_uri = 'wss://pusher.btsbots.com/ws';
-  }
+var ws_uri = 'wss://pusher.btsbots.com/ws';
 
 var connection = new autobahn.Connection({
     url: ws_uri,

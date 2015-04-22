@@ -20,7 +20,7 @@
 <th width="50%">{{=T('Description')}}</th>
 </table>
 
-<script src="http://pusher.btsbots.com/autobahn.min.js"></script>
+<script src="https://pusher.btsbots.com/autobahn.min.js"></script>
 
 <script type="text/javascript">
 Date.prototype.format = function(format) {
@@ -162,12 +162,7 @@ var amt_limit_in = {};
 
 var init_done = false;
 
-var ws_uri;
-if (document.location.protocol == "http:") {
-  ws_uri = 'ws://pusher.btsbots.com/ws';
-  }else{
-  ws_uri = 'wss://pusher.btsbots.com/ws';
-  }
+var ws_uri = 'wss://pusher.btsbots.com/ws';
 
 var connection = new autobahn.Connection({
     url: ws_uri,
