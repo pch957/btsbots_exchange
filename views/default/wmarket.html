@@ -11,7 +11,7 @@
     <option value="BTC/BTS">BTC/BTS</option>
     <option value="NOTE/BTS">NOTE/BTS</option>
   </select>
-{{=T('height of blockchain is')}}: <text id=height></text>
+  {{=T('height of blockchain is')}}: <text id='height'></text>(<text id='time_stamp'></text>)
 </div>
 
 			<div>
@@ -230,9 +230,10 @@ init_market = function(market) {
            refresh_trx(res);
         }
    );
-   active_session.call('btsbots.get_last', ['bts.blockchain.height']).then(
+   active_session.call('btsbots.get_last', ['bts.blockchain.info']).then(
         function (res) {
-           document.getElementById('height').innerHTML = res;
+           document.getElementById('height').innerHTML = res["height"];
+           document.getElementById('time_stamp').innerHTML = time_format(res["time_stamp"]);
         }
    );
 
@@ -257,10 +258,12 @@ init_market = function(market) {
        }
        );
 
-   function on_height(args) {
-      document.getElementById('height').innerHTML = args[0];
+   function on_chain_info(args) {
+      document.getElementById('height').innerHTML = args[0]["height"];
+      document.getElementById('time_stamp').innerHTML = time_format(args[0]["time_stamp"]);
    }
-   active_session.subscribe('bts.blockchain.height', on_height);
+   active_session.subscribe('bts.blockchain.info', on_chain_info);
+
 }
 
 connection.onopen = function (session) {
