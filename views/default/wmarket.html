@@ -4,12 +4,12 @@
 {{=T('market')}}: 
 <select id="market" name="market" onchange="javascript:change_market()">
     <option value="CNY/BTS" selected="true">CNY/BTS</option>
-    <option value="BOTSCNY/BTS">BOTSCNY/BTS</option>
-    <option value="BDR.AAPL/CNY">BDR.AAPL/CNY</option>
     <option value="USD/BTS">USD/BTS</option>
     <option value="GOLD/BTS">GOLD/BTS</option>
     <option value="BTC/BTS">BTC/BTS</option>
     <option value="NOTE/BTS">NOTE/BTS</option>
+    <option value="BOTSCNY/BTS">BOTSCNY/BTS</option>
+    <option value="CNY/BDR.AAPL">CNY/BDR.AAPL</option>
   </select>
   {{=T('height of blockchain is')}}: <text id='height'></text>(<text id='time_stamp'></text>)
 </div>
@@ -67,6 +67,7 @@ var last_market = market;
 var init_done = false;
 var active_session;
 var current_subscription = [];
+var reverse = false;
 
 change_market = function(){
   market = document.getElementById('market').value;
@@ -84,6 +85,10 @@ refresh_order_book = function (text) {
       tab_ask = document.getElementById('order_book_ask');
       var order_bid_list = text["bid"];
       var order_ask_list = text["ask"];
+      if (reverse == true){
+      order_bid_list = text["ask"];
+      order_ask_list = text["bid"];
+      }
       var rowCount = tab_bid.rows.length;
       for (var index = rowCount -1; index>0; index--) {
          tab_bid.deleteRow(index);
@@ -98,6 +103,11 @@ refresh_order_book = function (text) {
         var price = order_bid_list[index]["price"]
         var volume = order_bid_list[index]["volume"]
         var balance = volume * price
+        if (reverse == true){
+        price = 1/order_bid_list[index]["price"]
+        balance = order_bid_list[index]["volume"]
+        volume = balance / price
+        }
         dataTR.insertCell(0).innerHTML = price.toFixed(precision_price);
         dataTR.insertCell(1).innerHTML = volume.toFixed(2);
         dataTR.insertCell(2).innerHTML = balance.toFixed(2);
@@ -107,6 +117,11 @@ refresh_order_book = function (text) {
         var price = order_ask_list[index]["price"]
         var volume = order_ask_list[index]["volume"]
         var balance = volume * price
+        if (reverse == true){
+        price = 1/order_ask_list[index]["price"]
+        balance = order_ask_list[index]["volume"]
+        volume = balance / price
+        }
         dataTR.insertCell(0).innerHTML = price.toFixed(precision_price);
         dataTR.insertCell(1).innerHTML = volume.toFixed(2);
         dataTR.insertCell(2).innerHTML = balance.toFixed(2);
@@ -152,6 +167,7 @@ refresh_trx = function (text) {
         blockid = data.shift();
         time = time_format(data.shift())
         type = data.shift();
+        if (reverse == false) {
         if (type == "ask") {
         type = "{{=T('sell')}}"
         }else{
@@ -159,7 +175,18 @@ refresh_trx = function (text) {
         }
         price = data.shift().toFixed(precision_price);
         volume = data.shift().toFixed(3);
-        balance = (price*volume).toFixed(3)
+        balance = (volume*price).toFixed(3)
+        }else{
+        if (type == "ask") {
+        type = "{{=T('buy')}}"
+        }else{
+        type = "{{=T('ask')}}"
+        }
+        price = (1/data.shift()).toFixed(precision_price);
+        balance = data.shift().toFixed(3);
+        volume = (balance/price).toFixed(3)
+        }
+
         dataTR = tab.insertRow(1);
         dataTR.insertCell(0).innerHTML = time;
         dataTR.insertCell(1).innerHTML = blockid;
@@ -210,6 +237,10 @@ init_market = function(market) {
    quote = myarray[0];
    base = myarray[1];
    var prefix = quote + '_' + base;
+   if (quote == "CNY" &&  base == "BDR.AAPL"){
+   reverse = true;
+   prefix = base + '_' + quote;
+   }
    prefix = prefix.replace('.','-');
 
    if (init_done == false) {
