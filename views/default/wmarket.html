@@ -213,21 +213,24 @@ init_market = function(market) {
    base = myarray[1];
    var prefix = quote + '_' + base;
    prefix = prefix.replace('.','-');
-   controls = document.getElementsByName('quote');
-   var count = controls.length;
-   for (var index = 0; index < count; index++){
-     controls[index].innerHTML = quote
-   }
-   controls = document.getElementsByName('base');
-   count = controls.length;
-   for (var index = 0; index < count; index++){
-     controls[index].innerHTML = base
-   }
 
    if (init_done == false) {
+
+
    active_session.call('btsbots.get_last', ['bts.orderbook.'+prefix]).then(
         function (res) {
            refresh_order_book(res);
+
+           controls = document.getElementsByName('quote');
+           var count = controls.length;
+           for (var index = 0; index < count; index++){
+             controls[index].innerHTML = quote
+           }
+           controls = document.getElementsByName('base');
+           count = controls.length;
+           for (var index = 0; index < count; index++){
+             controls[index].innerHTML = base
+           }
         }
    );
    active_session.call('btsbots.get_history', ['bts.orderbook.'+prefix+".trx",20]).then(
