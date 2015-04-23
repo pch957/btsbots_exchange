@@ -153,6 +153,11 @@ refresh_trx = function (text) {
         blockid = data.shift();
         time = time_format(data.shift())
         type = data.shift();
+        if (type == "ask") {
+        type = "{{=T('sell')}}"
+        }else{
+        type = "{{=T('buy')}}"
+        }
         price = data.shift().toFixed(precision_price);
         volume = data.shift().toFixed(3);
         balance = (price*volume).toFixed(3)

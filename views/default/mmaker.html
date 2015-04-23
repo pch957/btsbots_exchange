@@ -30,6 +30,11 @@ refresh_trx = function (text) {
         time = time_format(data.shift())
         trxid = data.shift();
         type = data.shift();
+        if (type == "sell") {
+        type = "{{=T('sell')}}"
+        }else{
+        type = "{{=T('buy')}}"
+        }
         volume = data.shift();
         asset1 = data.shift();
         balance = data.shift();
