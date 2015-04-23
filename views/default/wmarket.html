@@ -73,9 +73,8 @@ change_market = function(){
   if(market == last_market){
     return;
   }else{
-    quite_market(last_market);
+    init_done = false;
     init_market(market);
-    last_market = market;
 }
 }
 
@@ -191,8 +190,7 @@ var connection = new autobahn.Connection({
    realm: 'realm1'}
 );
 
-quite_market = function() {
-   init_done = false;
+clear_last_market = function() {
 
    tab = document.getElementById('transaction_history');
    var rowCount = tab.rows.length;
@@ -219,8 +217,6 @@ init_market = function(market) {
 
    active_session.call('btsbots.get_last', ['bts.orderbook.'+prefix]).then(
         function (res) {
-           refresh_order_book(res);
-
            controls = document.getElementsByName('quote');
            var count = controls.length;
            for (var index = 0; index < count; index++){
@@ -231,10 +227,13 @@ init_market = function(market) {
            for (var index = 0; index < count; index++){
              controls[index].innerHTML = base
            }
+           refresh_order_book(res);
         }
    );
    active_session.call('btsbots.get_history', ['bts.orderbook.'+prefix+".trx",20]).then(
         function (res) {
+           clear_last_market(last_market);
+           last_market = market;
            refresh_trx(res);
         }
    );
