@@ -240,6 +240,8 @@ init_market = function(market) {
    if (quote == "CNY" &&  base == "BDR.AAPL"){
    reverse = true;
    prefix = base + '_' + quote;
+   }else{
+   reverse = false;
    }
    prefix = prefix.replace('.','-');
 
