@@ -180,7 +180,7 @@ refresh_trx = function (text) {
         if (type == "ask") {
         type = "{{=T('buy')}}"
         }else{
-        type = "{{=T('ask')}}"
+        type = "{{=T('sell')}}"
         }
         price = (1/data.shift()).toFixed(precision_price);
         balance = data.shift().toFixed(3);
