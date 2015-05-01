@@ -1,17 +1,27 @@
 {{extend 'layout.html'}}
 
-<div align="left">
-<div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('Place Order')}}</b></div>
-<div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div>
+
+<div class="form_div">
+<div class="con con_title">{{=T('Place Order')}}</div>
+<!-- <div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div> -->
 {{=form}}
+
+<script type="text/javascript">
+// select
+  jQuery("#deposit_currency").selectpick({parent:"sendasset",selectText:"",disabled: false,width:270,height:30,left:0,top:-20,_top:-36,z_index:9061});
+  //jQuery("#withdraw_currency").selectpick({parent:"getasset",selectText:"",disabled: false,width:270,height:30,left:0,top:-20,_top:-36});
+</script>
 <div id="price_div" style="display:none">
 <table id="price_list_tab" cellspacing="1" width="100%">
 <td width="100px">Currency</td><td width="200px">Bid Price</td><td width="200px">Ask Price</td><td width="200px">Limit</td>
 </table>
 </div>
+</div>
 
-<div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('transaction history')}}</b></div>
-<div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div>
+<div class="clearfix"></div>
+<div class="list_div">
+<div class="con con_title">{{=T('transaction history')}}</div>
+<!--<div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div>-->
 <table id="transaction_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
 <tbody><tr>
 <th width="10%">{{=T('Time')}}</th>
@@ -19,6 +29,7 @@
 <th width="5%">{{=T('Trx ID')}}</th>
 <th width="50%">{{=T('Description')}}</th>
 </table>
+</div>
 
 <script src="https://pusher.btsbots.com/autobahn.min.js"></script>
 

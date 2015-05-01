@@ -1,19 +1,25 @@
 {{extend 'layout.html'}}
-<div align="left">
-<div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('Place Order')}}</b></div>
-<div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div>
-{{=form}}
 
-<div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('transaction history')}}</b></div>
-<div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div>
-<table id="transaction_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
+<div class="form_div">
+<div class="con con_title"><b>{{=T('Place Order')}}</b></div>
+<!-- <div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div>-->
+{{=form}}
+</div>
+<script type="text/javascript">
+	jQuery("#operation").selectpick({parent:"operation_div",selectText:"",disabled: false,width:270,height:30,left:0,top:-28,_top:-30});
+</script>
+<div class="clearfix"></div>
+<div class="list_div">
+<div class="con con_title">{{=T('transaction history')}}</div>
+<!-- <div style="clear:both;height:1px;background:#FF9933;width:80%;margin: 5px 0 0 0"></div>-->
+<table id="transaction_history" class="tableStyle1" width="881">
 <tbody><tr>
 <th width="10%">{{=T('Time')}}</th>
 <th width="5%">{{=T('Block')}}</th>
 <th width="5%">{{=T('Trx ID')}}</th>
 <th width="50%">{{=T('Description')}}</th>
 </table>
-
+</div>
 <script type="text/javascript">
 var max_amount_a = 0;
 var max_amount_b = 0;

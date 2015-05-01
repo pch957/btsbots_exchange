@@ -1,17 +1,32 @@
 {{extend 'layout.html'}}
 
 
-<div style="margin: 5px 0;font-size:16px;"><table><tr><td width=23% align="left">{{=T('call auction will excute at block')}} <text style="color:#FF9933;" id=end_block></text> (<text id=end_time></text>)</td>
-<td width=30% align="right">{{=T('current match price')}}: <text id=excute_price style="color:#FF9933;"></text> CNY/{{=market}},{{=T('match volume')}}: <text style="color:#FF9933;"id=excute_volume></text> {{=market}}</td></tr></table></div>
+<div class="form_div">
+ <div class="con">
+  <table>
+    <tr>
+    <td width=23% align="left">{{=T('call auction will excute at block')}} <text style="color:#FF9933;" id=end_block></text> (<text id=end_time></text>)</td>
+    <td width=30% align="right">{{=T('current match price')}}: <text id=excute_price style="color:#FF9933;"></text> CNY/{{=market}},{{=T('match volume')}}: <text style="color:#FF9933;"id=excute_volume></text> {{=market}}</td>
+   </tr>
+  </table>
+  </div>
+  {{=form}}
+  <script type="text/javascript">
+  jQuery("#deposit_currency").selectpick({parent:"sendasset",selectText:"",disabled: false,width:120,height:30,left:0,top:-28,_top:-36,z_index:9061});
+  </script>
+  <div style="height:20px;">&nbsp;</div>
+</div>
+<div class="clearfix"></div>
 
-{{=form}}
-
-			<div>
-				<div style="margin-right:25px;float:left;width:35%">
+<div class="list_div" style="padding:20px 0px;">
+				<div style="margin-right:25px;float:left;width:45%">
 					<div style="margin: 5px 0;">
-            <table height="25" width="428"><tbody><tr><td style="font-size:16px;color:#009900;border:0px;float:left;line-height:25px;text-align:left;" valign="middle" width="318"><b>{{=T('bid')}}</b></td><td style="border:0px;text-align:right" valign="middle" width="110" align="right"></td></tr></tbody></table>
+            <table height="25" width="428"><tbody>
+            <tr><td style="font-size:16px;color:#009900;border:0px;float:left;line-height:25px;text-align:left;" valign="middle" width="318">
+            <b>{{=T('bid')}}</b></td><td style="border:0px;text-align:right" valign="middle" width="110" align="right"></td></tr>
+            </tbody></table>
 					</div>
-					<div style="clear:both;height:1px;background:#009900;width:100%;margin: 5px 0 0 0"></div>
+					<!--<div style="clear:both;height:1px;background:#009900;width:100%;margin: 5px 0 0 0"></div>-->
 					<table id="order_book_bid" class="tableStyle1" width="428">
 						<tbody><tr>
                 <th width="120">{{=T('Price')}}(<span class="mkType">CNY</span>)</th>
@@ -20,11 +35,11 @@
 						
         </tbody></table>
 				</div>
-				<div style="float:left;width:35%">
+				<div style="float:left;width:45%">
 					<div style="margin: 5px 0;">
             <table height="25" width="428"><tbody><tr><td style="font-size:16px;color:#D01515;border:0px;float:left;line-height:25px;text-align:left;" valign="middle" width="318"><b>{{=T('ask')}}</b></td><td style="border:0px;text-align:right" valign="middle" width="110" align="right"></td></tr></tbody></table>
 					</div>
-					<div style="clear:both;height:1px;background:#D01515;width:100%;margin: 5px 0 0 0"></div>
+					<!-- <div style="clear:both;height:1px;background:#D01515;width:100%;margin: 5px 0 0 0"></div> -->
 					<table id="order_book_ask" class="tableStyle1" width="428">
             <th width="120">{{=T('Price')}}(<span class="mkType">CNY</span>)</th>
             <th width="120">{{=T('Volume')}}(<span class="coinName">{{=market}}</span>)</th>
@@ -32,13 +47,13 @@
 						
         </tbody></table>
 				</div>
-			</div>
-			</div>
+</div>
+<div class="clearfix"></div>
 
-        <p></p>
-			<div>
-        <div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('transaction history')}}</b></div>
-				<div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div>
+
+		<div class="list_div">
+        <div class="con con_title">{{=T('transaction history')}}</div>
+				<!-- <div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div> -->
 				<table id="transaction_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
 					<tbody><tr>
 <th width="10%">{{=T('Time')}}</th>
@@ -51,9 +66,9 @@
 			</div>
 
         <p></p>
-			<div>
-				<div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div>
-        <div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('trade history')}}</b></div>
+			<div class="list_div">
+				<!-- <div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div> -->
+        <div class="con con_title">{{=T('trade history')}}</div>
 				<table id="trade_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
 					<tbody><tr>
 <th width="20%">{{=T('Time')}}</th>

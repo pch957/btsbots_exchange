@@ -1,8 +1,10 @@
 {{extend 'layout.html'}}
 
-<div>
-{{=T('market')}}: 
-<select id="market" name="market" onchange="javascript:change_market()">
+<div class="form_div">
+<div class='con'>
+<div class="float_l fw" style='width:40px;'>{{=T('market')}}:</div>
+<div class="div-select" id="getasset" > 
+  <select id="market" name="market" onchange="javascript:change_market();">
     <option value="CNY/BTS" selected="true">CNY/BTS</option>
     <option value="USD/BTS">USD/BTS</option>
     <option value="GOLD/BTS">GOLD/BTS</option>
@@ -11,15 +13,22 @@
     <option value="BOTSCNY/BTS">BOTSCNY/BTS</option>
     <option value="CNY/BDR.AAPL">CNY/BDR.AAPL</option>
   </select>
-  {{=T('height of blockchain is')}}: <text id='height'></text>(<text id='time_stamp'></text>)
 </div>
 
-			<div>
-				<div style="margin-right:25px;float:left;width:35%">
+<div class="float_l fw"> {{=T('height of blockchain is')}}: <text id='height'></text>(<text id='time_stamp'></text>)</div>
+</div>
+  <script type='text/javascript'>
+  jQuery("#market").selectpick({parent:"getasset",selectText:"",disabled: false,width:220,height:30,left:0,top:-25,_top:-36});
+  </script>
+</div>
+
+<div class="clearfix"></div>
+<div class="list_div">
+				<div style="margin-right:25px;float:left;width:40%">
 					<div style="margin: 5px 0;">
             <table height="25" width="428"><tbody><tr><td style="font-size:16px;color:#009900;border:0px;float:left;line-height:25px;text-align:left;" valign="middle" width="318"><b>{{=T('bid')}}</b></td><td style="border:0px;text-align:right" valign="middle" width="110" align="right"></td></tr></tbody></table>
 					</div>
-					<div style="clear:both;height:1px;background:#009900;width:100%;margin: 5px 0 0 0"></div>
+					<!-- <div style="clear:both;height:1px;background:#009900;width:100%;margin: 5px 0 0 0"></div> -->
 					<table id="order_book_bid" class="tableStyle1" width="428">
 						<tbody><tr>
                 <th width="120">{{=T('Price')}}(<span class="mkType"><text name="quote">CNY</text>/<text name="base">BTS</text></span>)</th>
@@ -29,11 +38,11 @@
 						
         </tbody></table>
 				</div>
-				<div style="float:left;width:35%">
+				<div style="float:left;width:40%">
 					<div style="margin: 5px 0;">
             <table height="25" width="428"><tbody><tr><td style="font-size:16px;color:#D01515;border:0px;float:left;line-height:25px;text-align:left;" valign="middle" width="318"><b>{{=T('ask')}}</b></td><td style="border:0px;text-align:right" valign="middle" width="110" align="right"></td></tr></tbody></table>
 					</div>
-					<div style="clear:both;height:1px;background:#D01515;width:100%;margin: 5px 0 0 0"></div>
+					<!-- <div style="clear:both;height:1px;background:#D01515;width:100%;margin: 5px 0 0 0"></div> -->
 					<table id="order_book_ask" class="tableStyle1" width="428">
             <th width="120">{{=T('Price')}}(<span class="mkType"><text name="quote">CNY</text>/<text name="base">BTS</text></span>)</th>
             <th width="120">{{=T('Volume')}}(<span class="coinName"><text name="base">BTS</text></span>)</th>
@@ -43,11 +52,11 @@
         </tbody></table>
 				</div>
 			</div>
-			</div>
-        <p></p>
-			<div>
+      
+<div class="clearfix"></div>
+<div class="list_div">
         <div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('trade history')}}</b></div>
-				<div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div>
+				<!-- <div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div> -->
 				<table id="transaction_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
 					<tbody><tr>
 <th>{{=T('Time')}}</th>

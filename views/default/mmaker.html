@@ -1,8 +1,9 @@
 {{extend 'layout.html'}}
 
-<div style="margin: 5px 0;font-size:16px;color:#FF9933;"><b>{{=T('trade history')}}</b></div>
-<div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div>
-<table id="trade_history" style="float:left" id="tradeTable" class="tableStyle1" width="881">
+<div class="list_div">
+<div class="con con_title">{{=T('trade history')}}</div>
+<!-- <div style="clear:both;height:1px;background:#FF9933;width:70%;margin: 5px 0 0 0"></div>-->
+<table id="trade_history" class="tableStyle1" width="881">
 	<tbody><tr>
     <th>{{=T('Time')}}</th>
     <th>{{=T('Type')}}</th>
@@ -14,7 +15,7 @@
     <th>{{=T('Asset')}}</th>
   </tr></tbody>
 </table>
-
+</div>
 <script type="text/javascript">
 refresh_trx = function (text) {
       if (!text) return;
