@@ -1,0 +1,88 @@
+@CHARSET "UTF-8";
+/*外面边框的样式*/
+.selectpick_div {
+	background-color: #FFFFFF;
+	font-size: 13px;
+	font-weight: 500;
+	border-radius: 5px;
+	-moz-border-radius: 5px;
+	-webkit-border-radius: 5px;
+	border: solid 1px #CFCFCF;
+	line-height: 30px;
+	position: relative;
+	padding-left: 5px;
+	overflow: auto;
+	cursor: pointer;
+	z-index: 9060;
+}
+
+.selectpick_icon {
+	float: right;
+	background: url(../images/icon.png) no-repeat center;
+	margin-right: 5px;
+	height: 30px;
+	width: 14px;
+	cursor: pointer;
+}
+
+.selectpick_div:hover {
+	background-color: #F5F5F5;
+	border: solid 1px #ccc;
+}
+
+.selectpick_div:active {
+	-moz-box-shadow: 0 0 3px #0099CC;
+	-webkit-box-shadow: 0 0 3px #0099CC;
+	box-shadow: 0 0 3px #0099CC;
+	border: solid 1px #0099CC;
+}
+
+/*下拉框的主体*/
+.selectpick_options {
+	position: relative;
+	z-index: 9060;
+	font-size: 13.5px;
+	margin-top:2px;
+}
+
+.selectpick_options ul {
+	list-style: none;
+	height: auto;
+	margin: 0px;
+	padding: 0px;
+	z-index: 9060;
+	font-size: 13.5px;
+	overflow: auto;
+	border: 1px solid #CFCFCF;
+	background-color: #fff;
+}
+
+.selectpick_options ul li {
+	border-bottom: 1px dashed #CFCFCF;
+	padding-left: 5px;
+	display: block;
+	font-size: 13.5px;
+	z-index: 9060;
+	overflow:hidden;
+	background-color: #fff;
+}
+
+.selectpick_options_selected {
+	font-size: 13.5px;
+	overflow:hidden;
+	z-index: 9060;
+}
+
+/*设置下拉框的不透明度*/
+.select_hide {
+	-moz-opacity: 0;
+	opacity: 0;
+	-webkit-opacity: 0;
+	filter: alpha(opacity =       0);
+}
+/*设置为disabled的时候*/
+.selectpick_no_select {
+	cursor: default;
+	color: #9a9898;
+	background-color: #F5F5F5;
+}
