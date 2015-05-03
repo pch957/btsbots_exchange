@@ -82,9 +82,9 @@
 	{{=response.logo or ''}}
         <ul id="navbar" class="nav pull-right">{{='auth' in globals() and auth.navbar(mode="dropdown") or ''}}</ul>
         <div class="nav-collapse">
-          {{is_mobile=request.user_agent().is_mobile}}
+          {{is_mobile=False}}
           {{if response.menu:}}
-          {{=MENU(response.menu, _class='mobile-menu nav' if is_mobile else 'nav',mobile=is_mobile,li_class='dropdown',ul_class='dropdown-menu')}}
+          {{=MENU(response.menu, _class= 'nav',mobile=is_mobile,li_class='dropdown',ul_class='dropdown-menu')}}
           {{pass}}
         </div><!--/.nav-collapse -->
       </div>
@@ -128,12 +128,6 @@
     </div><!-- /container -->
     <!-- Footer ================================================== -->
     <div class="foot_div">
-        <div class="weixin">
-		        <div style="width:145px;" class="float_l">
-              <img src="{{=URL('static', 'images/er.png')}}"/>
-              <div class="wx_c">{{=T('Pay attention to our')}}</div>
-            </div>
-        </div>
         {{block footer}}
 	      <div class="copyright">
 		        <div class="foot_logo">
