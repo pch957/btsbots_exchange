@@ -5,7 +5,7 @@ def download(): return response.download(request,db)
 def call(): return service()
 ### end requires
 def index():
-    form = FORM(    
+    form = FORM(
       DIV(
           DIV(T('Deposit currency')+':',_class='float_l fw div-lable'),
           DIV(
@@ -16,10 +16,10 @@ def index():
           _class='con'
       ),
       DIV(
-         DIV(T('Deposit amount')+':',_class='float_l fw div-lable'), 
+         DIV(T('Deposit amount')+':',_class='float_l fw div-lable'),
          INPUT(_id="deposit_amount",_name="deposit_amount",_onchange="javascript:calc_order();",_onkeyup="javascript:calc_order();",value=1,_class='input-xlarge'),
          T('Max')+':',SPAN(_id="deposit_limit"),
-         _class='con fw' 
+         _class='con fw'
       ),
       DIV(
         DIV(T('Withdraw currency')+':',_class='float_l fw div-lable'),
@@ -53,7 +53,7 @@ def auction():
       chanel_prefix = "auction_pls"
     else:
       asset = "BTS"
-      account = "auction.btsbots"
+      account = "bts.auction.btsbots"
       chanel_prefix = "auction"
     form = FORM(
         DIV(
