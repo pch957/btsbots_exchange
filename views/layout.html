@@ -69,31 +69,31 @@
 
 <body>
   <!-- Navbar ================================================== -->
-  <div class="body">
-  
-  <div class="header">
+  <div class="navbar navbar-fixed-top">
     <div class="flash">{{=response.flash or ''}}</div>
     <div class="navbar-inner">
       <div class="container">
-        {{is_mobile=request.user_agent().is_mobile}}
         <!-- the next tag is necessary for bootstrap menus, do not remove -->
-        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse" style="{{='display:none;' if not is_mobile else ''}}">
+        <button type="button" class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        {{=response.logo or ''}}
-        <div class="header_left">
+	{{=response.logo or ''}}
+        <ul id="navbar" class="nav pull-right">{{='auth' in globals() and auth.navbar(mode="dropdown") or ''}}</ul>
+        <div class="nav-collapse">
+          {{is_mobile=request.user_agent().is_mobile}}
           {{if response.menu:}}
           {{=MENU(response.menu, _class='mobile-menu nav' if is_mobile else 'nav',mobile=is_mobile,li_class='dropdown',ul_class='dropdown-menu')}}
           {{pass}}
-          <div class="lavalamp"></div>
         </div><!--/.nav-collapse -->
       </div>
     </div>
-    
+    <div class="lavalamp"></div>
   </div><!--/top navbar -->
-
+  
+  <!-- <div class="body">-->
+  
   <div class="container">
     <!-- Masthead ================================================== -->
     <header class="mastheader row" id="header">
@@ -128,6 +128,12 @@
     </div><!-- /container -->
     <!-- Footer ================================================== -->
     <div class="foot_div">
+        <div class="weixin">
+		        <div style="width:145px;" class="float_l">
+              <img src="{{=URL('static', 'images/er.png')}}"/>
+              <div class="wx_c">{{=T('Pay attention to our')}}</div>
+            </div>
+        </div>
         {{block footer}}
 	      <div class="copyright">
 		        <div class="foot_logo">
@@ -137,9 +143,15 @@
 	      </div>
 	      <div class="foot_gj float_r">{{=T('Powered by')}}<a href="http://www.web2py.com/">web2py</a></div>
         {{end}}
+	      <!-- <div style="position: fixed; top: 120px;right: 100px;background: #fff;text-align: center;z-index:9062;" id="scrollQrcode">
+	          <img src="{{=URL('static', 'images/gushi.png')}}"></br>
+            <embed width="210" height="172" flashvars="lang=CN" allowscriptaccess="sameDomain" 
+            base="http://www.sse.com.cn/home/flash/" quality="high" bgcolor="#FFFFFF" name="movie" i
+            d="movie" style="undefined" src="http://www.sse.com.cn/home/flash/IndexDailyTrend.swf" type="application/x-shockwave-flash"> 
+	      </div> -->
     </div>
 
-  </div>
+  <!-- </div> -->
 
   <!-- The javascript =============================================
        (Placed at the end of the document so the pages load faster) -->

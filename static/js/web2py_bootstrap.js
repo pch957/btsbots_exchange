@@ -8,7 +8,10 @@ jQuery(function(){
     if(jQuery(this).find('ul').length)
       jQuery(this).addClass('dropdown-submenu');
   });
-  jQuery('.lavalamp').css('left',jQuery('ul.nav li.web2py-menu-active').offset().left);
+  
+  //lavalamp
+  jQuery('.navbar .lavalamp').css('left',jQuery('ul.nav li.web2py-menu-active').offset().left);
+  jQuery('.navbar .lavalamp').fadeIn();
   
   function adjust_height_of_collapsed_nav() {
         var cn = jQuery('div.collapse');
@@ -22,18 +25,22 @@ jQuery(function(){
   function hoverMenu(){
     jQuery('ul.nav a.dropdown-toggle').parent().hover(function(){
         adjust_height_of_collapsed_nav();
-        var mi = jQuery(this).addClass('open');
-        mi.children('.dropdown-menu').stop(true, true).delay(100).fadeIn(400);
+        var mi = jQuery(this).addClass('open open-back');
+        //mi.children('.dropdown-toggle').css('background-color','#aaa');
+        mi.children('.dropdown-menu').stop(true, true).delay(200).fadeIn(500);
     }, function(){
         var mi = jQuery(this);
-        mi.children('.dropdown-menu').stop(true, true).delay(100).fadeOut(function(){mi.removeClass('open')});
+        //mi.children('.dropdown-toggle').css('background-color','transparent');
+        mi.removeClass('open-back');
+        mi.children('.dropdown-menu').stop(true, true).delay(200).fadeOut(0,function(){mi.removeClass('open')});
     });
+    //lavalamp
     jQuery('ul.nav li').hover(function(){
-        var div = jQuery('.lavalamp');
+        var div = jQuery('.navbar .lavalamp');
         var thisli = jQuery(this);
         div.css('left',thisli.offset().left);
     }, function(){
-        var div = jQuery('.lavalamp');
+        var div = jQuery('.navbar .lavalamp');
         var activeli = jQuery('ul.nav li.web2py-menu-active');
         div.css('left',activeli.offset().left);
     });
