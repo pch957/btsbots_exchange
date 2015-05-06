@@ -30,7 +30,7 @@
         device-width: Occupy full width of the screen in its current orientation
         initial-scale = 1.0 retains dimensions instead of zooming out if page height > device height
         user-scalable = yes allows the user to zoom in -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <!-- <meta name="viewport" content="width=device-width, initial-scale=1.0" /> -->
 
   <link rel="shortcut icon" href="{{=URL('static','images/favicon.ico')}}" type="image/x-icon">
   <link rel="apple-touch-icon" href="{{=URL('static','images/favicon.png')}}">
@@ -40,10 +40,10 @@
   <script src="{{=URL('static','js/modernizr.custom.js')}}"></script>
 
   <!-- include stylesheets -->
+  <!-- response.files.insert(2,URL('static','css/bootstrap-responsive.min.css')) -->
   {{
   response.files.insert(0,URL('static','css/web2py.css'))
   response.files.insert(1,URL('static','css/bootstrap.min.css'))
-  response.files.insert(2,URL('static','css/bootstrap-responsive.min.css'))
   response.files.insert(3,URL('static','css/web2py_bootstrap.css'))
   response.files.insert(4,URL('static','css/common.css'))
   response.files.insert(5,URL('static','css/selectpick.css'))
@@ -82,9 +82,9 @@
 	{{=response.logo or ''}}
         <ul id="navbar" class="nav pull-right">{{='auth' in globals() and auth.navbar(mode="dropdown") or ''}}</ul>
         <div class="nav-collapse">
-          {{is_mobile=False}}
+          {{is_mobile=request.user_agent().is_mobile}}
           {{if response.menu:}}
-          {{=MENU(response.menu, _class= 'nav',mobile=is_mobile,li_class='dropdown',ul_class='dropdown-menu')}}
+          {{=MENU(response.menu, _class='mobile-menu nav' if is_mobile else 'nav',mobile=is_mobile,li_class='dropdown',ul_class='dropdown-menu')}}
           {{pass}}
         </div><!--/.nav-collapse -->
       </div>
@@ -169,7 +169,6 @@ m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
   </script>
   <!-- End Google Analytics -->
   {{pass}}
-  <script src="{{=URL('static','js/share.js',vars=dict(static=URL('static','images')))}}"></script>
 </body>
 </html>
 

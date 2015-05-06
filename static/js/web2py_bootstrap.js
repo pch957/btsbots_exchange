@@ -10,8 +10,13 @@ jQuery(function(){
   });
   
   //lavalamp
-  jQuery('.navbar .lavalamp').css('left',jQuery('ul.nav li.web2py-menu-active').offset().left);
-  jQuery('.navbar .lavalamp').fadeIn();
+  var lavalamp = jQuery('.navbar .lavalamp');
+  if(location.href.indexOf('gateway')>0) {
+    jQuery('li.dropdown ul.dropdown-menu a[href="/btsbots_exchange/default/gateway?asset=PLS"]')
+    .parents('li.dropdown').addClass('web2py-menu-active');
+  }
+  lavalamp.css('left',jQuery('ul.nav li.web2py-menu-active').offset().left);
+  lavalamp.fadeIn();
   
   function adjust_height_of_collapsed_nav() {
         var cn = jQuery('div.collapse');
@@ -47,5 +52,9 @@ jQuery(function(){
   }
   hoverMenu(); // first page load
   jQuery(window).resize(hoverMenu); // on resize event
-  jQuery('ul.nav li.dropdown a').click(function(){window.location=jQuery(this).attr('href');});
+  jQuery('ul.nav li.dropdown a').click(function(){
+    jQuery('.web2py-menu-active').removeClass('web2py-menu-active');
+    jQuery(this).parents('li.dropdown').addClass('web2py-menu-active');
+    window.location=jQuery(this).attr('href');    
+  });
 });
