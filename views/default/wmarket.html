@@ -92,11 +92,11 @@ refresh_order_book = function (text) {
       var precision_price = 7
       tab_bid = document.getElementById('order_book_bid');
       tab_ask = document.getElementById('order_book_ask');
-      var order_bid_list = text["bid"];
-      var order_ask_list = text["ask"];
+      var order_bid_list = text["bids"];
+      var order_ask_list = text["asks"];
       if (reverse == true){
-      order_bid_list = text["ask"];
-      order_ask_list = text["bid"];
+      order_bid_list = text["asks"];
+      order_ask_list = text["bids"];
       }
       var rowCount = tab_bid.rows.length;
       for (var index = rowCount -1; index>0; index--) {
@@ -109,12 +109,12 @@ refresh_order_book = function (text) {
 
       for (index in order_bid_list) {
         dataTR = tab_bid.insertRow();
-        var price = order_bid_list[index]["price"]
-        var volume = order_bid_list[index]["volume"]
+        var price = order_bid_list[index][0]
+        var volume = order_bid_list[index][1]
         var balance = volume * price
         if (reverse == true){
-        price = 1/order_bid_list[index]["price"]
-        balance = order_bid_list[index]["volume"]
+        price = 1/order_bid_list[index][0]
+        balance = order_bid_list[index][1]
         volume = balance / price
         }
         dataTR.insertCell(0).innerHTML = price.toFixed(precision_price);
@@ -123,12 +123,12 @@ refresh_order_book = function (text) {
       } 
       for (index in order_ask_list) {
         dataTR = tab_ask.insertRow();
-        var price = order_ask_list[index]["price"]
-        var volume = order_ask_list[index]["volume"]
+        var price = order_ask_list[index][0]
+        var volume = order_ask_list[index][1]
         var balance = volume * price
         if (reverse == true){
-        price = 1/order_ask_list[index]["price"]
-        balance = order_ask_list[index]["volume"]
+        price = 1/order_ask_list[index][0]
+        balance = order_ask_list[index][1]
         volume = balance / price
         }
         dataTR.insertCell(0).innerHTML = price.toFixed(precision_price);
@@ -177,7 +177,7 @@ refresh_trx = function (text) {
         time = time_format(data.shift())
         type = data.shift();
         if (reverse == false) {
-        if (type == "ask") {
+        if (type == "ask" || type == "sell") {
         type = "{{=T('sell')}}"
         }else{
         type = "{{=T('buy')}}"
@@ -186,7 +186,7 @@ refresh_trx = function (text) {
         volume = data.shift().toFixed(3);
         balance = (volume*price).toFixed(3)
         }else{
-        if (type == "ask") {
+        if (type == "ask" || type == "sell") {
         type = "{{=T('buy')}}"
         }else{
         type = "{{=T('sell')}}"
