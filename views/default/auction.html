@@ -290,6 +290,8 @@ function refresh_comment() {
       }else{
      document.getElementById('price_limit').style= "color:#000000;";
      }
+    var pay_link = "bts:"+account+"/transfer/amount/" + d_amt + "/asset/" + d_cur + "/memo/" + d_price;
+	qrcode.makeCode(pay_link);
   } catch (e) {
   }
 }
@@ -305,6 +307,7 @@ window.setInterval(function(){ShowCountDown();}, 1000);
 </script>
 
 <script src="https://pusher.btsbots.com/autobahn.min.js"></script>
+<script src="{{=URL('static','js/qrcode.min.js')}}"></script>
 <script type="text/javascript">
 var init_done = false;
 
@@ -387,4 +390,8 @@ connection.onopen = function (session) {
 };
 
 connection.open();
+var qrcode = new QRCode(document.getElementById("qrcode"), {
+	width : 80,
+	height : 80
+});
 </script>

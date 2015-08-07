@@ -7,6 +7,7 @@ def call(): return service()
 def index():
     form = FORM(
       DIV(
+      DIV(
           DIV(T('Deposit currency')+':',_class='float_l fw div-lable'),
           DIV(
           SELECT('BOTSCNY','BDR.AAPL','BTS','CNY','USD','EUR','GOLD','SILVER','BTC', _name="deposit_currency",_id="deposit_currency",_onchange="javascript:calc_order()"),
@@ -32,7 +33,8 @@ def index():
       ),
       DIV(T('Withdraw amount')+':',SPAN(_id="withdraw_amount"), T('Price')+':', SPAN(_id="exchange_price"),_class='con'),
       INPUT(_class='btn btn-success',_type='button',  _value=T("Place Order"),  _onclick="javascript:generate_link()"),
-      DIV(T('Comment')+':', TT(_id="comment"),_class='con'),
+      DIV(T('Comment')+':', TT(_id="comment")), _class="left"),
+      DIV(DIV(_id="qrcode"), _class="right"),
       DIV(_id="link_div",_style="display:none"),
       _id="fm", _name="fm")
 
@@ -56,7 +58,7 @@ def auction():
       account = "bts.auction.btsbots"
       chanel_prefix = "auction"
     form = FORM(
-        DIV(
+        DIV(DIV(
         DIV(T('Deposit'), _class='float_l fw',_style='margin:0 5px 0 0'),
         DIV(INPUT(_id="deposit_amount",_name="deposit_amount",_onkeyup="javascript:refresh_comment();",_onchange="javascript:refresh_comment();",value=1), _class='float_l fw'),
         DIV(SELECT(asset,'BOTSCNY','CNY','USD','EUR','GOLD','SILVER', _name="deposit_currency",_id="deposit_currency",_onchange="javascript:refresh_comment();"),
@@ -74,7 +76,8 @@ def auction():
           SPAN(T('Comment')+':',_class='label label-info', _style='margin-right:5px;'), TT(_id="comment"),
           P(),
           T('transfer ASSET if you want to sell MARKET, others for buy MARKET.').replace("ASSET",asset).replace("MARKET",market)
-        ),
+        ), _class="left"),
+      DIV(DIV(_id="qrcode"), _class="right"),
         _id="fm", _name="fm")
     #response.flash = T('transfer BTS if you want to sell, others for buy.')
     return dict(form=form, market=market, account=account, chanel_prefix=chanel_prefix)

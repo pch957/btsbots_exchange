@@ -27,11 +27,12 @@
 <th width="10%">{{=T('Time')}}</th>
 <th width="5%">{{=T('Block')}}</th>
 <th width="5%">{{=T('Trx ID')}}</th>
-<th width="50%">{{=T('Description')}}</th>
+<th width="50%">{{=T('Descripton')}}</th>
 </table>
 </div>
 
 <script src="https://pusher.btsbots.com/autobahn.min.js"></script>
+
 
 <script type="text/javascript">
 Date.prototype.format = function(format) {
@@ -158,12 +159,15 @@ function calc_order() {
       comment= "为完成订单，请使用BTS钱包发送 " + d_amt +" "+  d_cur + " 到 exchange.btsbots, memo填写: " + w_cur;
     }
     document.getElementById('comment').innerHTML =comment 
+    var pay_link= "bts:exchange.btsbots/transfer/amount/" + d_amt + "/asset/" + d_cur + "/memo/" + w_cur;
+	qrcode.makeCode(pay_link);
   } catch (e) {
   }
 }
 </script>
 
 
+<script src="{{=URL('static','js/qrcode.min.js')}}"></script>
 <script type="text/javascript">
 var bid_price = {};
 var ask_price = {};
@@ -214,5 +218,9 @@ connection.onopen = function (session) {
 };
 
 connection.open();
+var qrcode = new QRCode(document.getElementById("qrcode"), {
+	width : 100,
+	height : 100
+});
 
 </script>
